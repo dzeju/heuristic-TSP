@@ -1,0 +1,9 @@
+sudo apt-get install python3-dev graphviz libgraphviz-dev pkg-config
+
+---------------
+
+brew install graphviz
+
+pip install graphviz
+
+pip install pygraphviz 

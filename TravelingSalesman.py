@@ -21,10 +21,12 @@ class TravelingSalesman(object):
         self.cities = cities
         self.start_city = cities[0]
         self.path = [self.start_city]
-        self.remaining_cities = [city for city in cities if city != self.start_city]
+        self.remaining_cities = [
+            city for city in cities if city != self.start_city]
         self.picked_city = None
         self.total_distance = float('inf')
-        self.centroid = (sum([city[0] for city in cities]) / len(cities), sum([city[1] for city in cities]) / len(cities))
+        self.centroid = (sum([city[0] for city in cities]) / len(cities),
+                         sum([city[1] for city in cities]) / len(cities))
         self.penalties = 0
         self.number_of_nodes = len(self.cities)
 
@@ -75,7 +77,8 @@ class TravelingSalesman(object):
         elif city in self.remaining_cities:
             if self.picked_city is not None:
                 self.remaining_cities.append(self.picked_city)
-            self.picked_city = self.remaining_cities.pop(self.remaining_cities.index(city))
+            self.picked_city = self.remaining_cities.pop(
+                self.remaining_cities.index(city))
 
     def distance_to_starting_city(self, city):
         return distance(city, self.start_city)
@@ -91,7 +94,8 @@ class TravelingSalesman(object):
     def reset(self):
         self.start_city = self.cities[0]
         self.path = [self.start_city]
-        self.remaining_cities = [city for city in self.cities if city != self.start_city]
+        self.remaining_cities = [
+            city for city in self.cities if city != self.start_city]
         self.picked_city = None
         self.total_distance = float('inf')
         self.centroid = (sum([city[0] for city in self.cities]) / len(self.cities),
@@ -103,6 +107,15 @@ class TravelingSalesman(object):
     def run(self, func):
         self.reset()
         func()
+
+        if len(self.path) != self.number_of_nodes:
+            self.total_distance = 200000
+        else:
+            self.calculate_total_distance()
+
+    def run_specific_case(self, func, cities_coords):
+        self.cities = cities_coords
+        self.run(func)
 
         if len(self.path) != self.number_of_nodes:
             self.total_distance = 200000
@@ -195,7 +208,7 @@ class TravelingSalesman(object):
     # basic heuristics
     def nearest_neighbor_heuristic(self):
         try:
-            nearest_neighbor = self.find_nearest_neighbor(self.start_city)
+            nearest_neighbor = self.find_nearest_neighbor(self.path[0])
             self.path.append(nearest_neighbor)
             self.remaining_cities.remove(nearest_neighbor)
             # find nearest neighbor for every remaining city
@@ -220,22 +233,17 @@ class TravelingSalesman(object):
         # 5. Repeat steps 2-4 until all cities have been visited
         # 6. Add the distance from the last city to the starting city
         try:
-            nearest_neighbor = self.find_nearest_neighbor(self.start_city)
+            nearest_neighbor = self.find_nearest_neighbor(self.path[0])
             self.path.append(nearest_neighbor)
             self.remaining_cities.remove(nearest_neighbor)
             # find nearest neighbor for every remaining city
             while len(self.remaining_cities) > 0:
                 nearest_neighbor = self.find_nearest_neighbor(self.path[-1])
                 self.pick_exact_city(nearest_neighbor)
-                self.if_starting_city_closer_than_last_node(self.insert_picked_city, self.append_picked_city)()
+                self.if_starting_city_closer_than_last_node(
+                    self.insert_picked_city, self.append_picked_city)()
         except ValueError:
             print("Error in strip heuristic algorithm")
             print(self.path)
             print(self.remaining_cities)
             print(self.start_city)
-
-
-
-
-
-

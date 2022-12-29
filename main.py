@@ -3,10 +3,11 @@ from functools import partial
 from bitmap_points import BitMapPoints
 import copy
 import multiprocessing
-import signal
+import os
 from contextlib import contextmanager
 import tsplib95
 from wrapt_timeout_decorator import *
+import datetime
 
 import numpy
 
@@ -24,13 +25,20 @@ from drawing import draw_fitness_curve, draw_tree, draw_path
 
 # image_points = BitMapPoints('shape2.png')
 # cities_coord = image_points.convert_to_list_of_points()
+
+# solution = tsplib95.load('ALL_tsp/ch130.opt.tour/ch130.opt.tour')
+# print(solution)
+# print(tsplib95.load('ALL_tsp/ch130.tsp').trace_tours(solution.tours))
+
 problems = [
-            # tsplib95.load('/Users/dzeju/Documents/PycharmProjects/heuristic-TSP/ALL_tsp/bayg29.tsp'),
-            # tsplib95.load('/Users/dzeju/Documents/PycharmProjects/heuristic-TSP/ALL_tsp/berlin52.tsp'),
-            tsplib95.load('/Users/dzeju/Documents/PycharmProjects/heuristic-TSP/ALL_tsp/bier127.tsp'),
-            tsplib95.load('/Users/dzeju/Documents/PycharmProjects/heuristic-TSP/ALL_tsp/burma14.tsp'),
-            # tsplib95.load('/Users/dzeju/Documents/PycharmProjects/heuristic-TSP/ALL_tsp/ch130.tsp')
+    # tsplib95.load('/Users/dzeju/Documents/PycharmProjects/heuristic-TSP/ALL_tsp/bayg29.tsp'),
+    # tsplib95.load('/Users/dzeju/Documents/PycharmProjects/heuristic-TSP/ALL_tsp/berlin52.tsp'),
+    # tsplib95.load('ALL_tsp/bier127.tsp'),
+    # tsplib95.load('ALL_tsp/burma14.tsp'),
+    tsplib95.load('ALL_tsp/ch130.tsp')
 ]
+
+
 cities_coord = list()
 for problem in problems:
     cities_coord.append(list(problem.as_name_dict()['node_coords'].values()))
@@ -76,7 +84,8 @@ def prog4(out1, out2, out3, out4):
 
 p_set = gp.PrimitiveSet("MAIN", 0)
 # p_set.addPrimitive(ts.full_nearest_neighbor_algorithm, 1)
-p_set.addPrimitive(ts.for_every_remaining_city, 1, name="for_every_remaining_city")
+p_set.addPrimitive(ts.for_every_remaining_city, 1,
+                   name="for_every_remaining_city")
 # p_set.addPrimitive(ts.pick_exact_city, 1, name="pick_exact_city")
 p_set.addPrimitive(ts.if_starting_city_closer_than_last_node, 2, name="IF_SC")
 p_set.addPrimitive(ts.if_centroid_farther_than_last_node, 2, name="IF_CF")
@@ -98,7 +107,8 @@ creator.create("Individual", gp.PrimitiveTree, fitness=creator.FitnessMin)
 
 toolbox = base.Toolbox()
 toolbox.register("expr", gp.genHalfAndHalf, pset=p_set, min_=1, max_=5)
-toolbox.register("individual", tools.initIterate, creator.Individual, toolbox.expr)
+toolbox.register("individual", tools.initIterate,
+                 creator.Individual, toolbox.expr)
 toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 toolbox.register("compile", gp.compile, pset=p_set)
 
@@ -114,7 +124,8 @@ def eval_traveling_distance(individual):
         total_distance, penalties = run_individual(func, cities_coord)
         # return ts.total_distance,                         # <- this is the original
         # return (ts.total_distance + ts.penalties * 10),   # <- this is for single case
-        return (total_distance + penalties * 10),         # <- this is for multiple cases
+        # <- this is for multiple cases
+        return (total_distance + penalties * 10),
     except SyntaxError as s_err:
         print(s_err)
         return float('inf'),
@@ -150,44 +161,84 @@ def main():
     mstats.register("min", numpy.min)
     mstats.register("max", numpy.max)
 
-    pop, log = algorithms.eaSimple(pop, toolbox, 0.5, 0.1, 7000, stats=mstats,
+    cxpb, mutpb, ngen = 0.5, 0.2, 2
+
+    pop, log = algorithms.eaSimple(pop, toolbox, cxpb, mutpb, ngen, stats=mstats,
                                    halloffame=hof, verbose=True)
 
     best_indiv = hof[0]
     func = toolbox.compile(best_indiv, pset=p_set)
-    ts.run(func)
-    best_indiv_copy = copy.deepcopy(ts)
 
-    ts.run(ts.nearest_neighbor_heuristic)
-    nearest_neighbor_copy = copy.deepcopy(ts)
+    # print(toolbox.__getattribute__('expr_mut'))
+    # return
 
-    ts.run(ts.strip_heuristic)
-    strip_copy = copy.deepcopy(ts)
+    drawings_list = []
 
-    print('evolution path length:        ', best_indiv_copy.total_distance)
-    print('nearest neighbor path length: ', nearest_neighbor_copy.total_distance)
-    print('strip path length:            ', strip_copy.total_distance)
+    date_time = str(datetime.datetime.now())
+    os.mkdir('results/'+date_time)
+    file = open('results/'+date_time+'/logs.txt', 'w')
 
-    drawings = {'evolution': best_indiv_copy.path,
-                'nearest_neighbour': nearest_neighbor_copy.path,
-                'strip': strip_copy.path}
+    file.writelines([date_time])
+    file.writelines(['\n\nmutpb: ' + str(mutpb), '\n', 'cxpb: ' +
+                    str(cxpb), '\n', 'ngen: ' + str(ngen)])
+    file.writelines(['\n\nbest individual: ', str(best_indiv)])
+    file.writelines(['\n\nexpr_mut: ', str(toolbox.__getattribute__('expr_mut')),
+                     '\nselect: ', str(toolbox.__getattribute__('select')),
+                     '\nmate: ', str(toolbox.__getattribute__('mate')),
+                     '\nmutate: ', str(toolbox.__getattribute__('mutate'))])
 
-    draw_path(drawings, cities_coord)
+    for i, cities in enumerate(cities_coord):
+        ts.run_specific_case(func, cities)
+        best_indiv_copy = copy.deepcopy(ts)
+
+        ts.run_specific_case(ts.nearest_neighbor_heuristic, cities)
+        nearest_neighbor_copy = copy.deepcopy(ts)
+
+        ts.run_specific_case(ts.strip_heuristic, cities)
+        strip_copy = copy.deepcopy(ts)
+
+        print('evolution path length:        ', best_indiv_copy.total_distance)
+        print('nearest neighbor path length: ',
+              nearest_neighbor_copy.total_distance)
+        print('strip path length:            ', strip_copy.total_distance)
+
+        drawings = {'evolution': best_indiv_copy.path,
+                    'nearest_neighbour': nearest_neighbor_copy.path,
+                    'strip': strip_copy.path}
+
+        drawings_list.append(drawings)
+
+        # draw_path(drawings, cities_coord[i])
+        name = problems[i].as_name_dict()['name']
+
+        result_list = ['\n',
+                       name,
+                       'evolution path length:        ' +
+                       str(best_indiv_copy.total_distance),
+                       'nearest neighbor path length: ' +
+                       str(nearest_neighbor_copy.total_distance),
+                       'strip path length:            ' +
+                       str(strip_copy.total_distance)]
+
+        file.writelines("% s\n" % data for data in result_list)
+
+    file.close()
 
     nodes, edges, labels = gp.graph(best_indiv)
-    draw_tree(nodes, edges, labels)
+    draw_tree(nodes, edges, labels, date_time)
+
+    draw_fitness_curve(log.chapters["fitness"].select("min"), date_time)
+
+    for i, drawings in enumerate(drawings_list):
+        name = problems[i].as_name_dict()['name']
+        draw_path(drawings, cities_coord[i], name, date_time)
 
     # draw first created tree
     # nodes, edges, labels = gp.graph(pop[0])
     # draw_tree(nodes, edges, labels)
-
-    draw_fitness_curve(log.chapters["fitness"].select("min"))
-    best_path = hof[0]
-    print(best_path)
 
 
 if __name__ == '__main__':
     pool = multiprocessing.Pool()
     toolbox.register("map", pool.map)
     main()
-

@@ -1,0 +1,18 @@
+bier127
+evolution path length:        130411.44007558978
+nearest neighbor path length: 135751.77804825202
+strip path length:            138982.38319542535
+
+
+burma14
+evolution path length:        39.04168087389239
+nearest neighbor path length: 38.68810773852191
+strip path length:            30.66877843341003
+
+
+ch130
+evolution path length:        7594.290198279959
+nearest neighbor path length: 7575.286291798959
+strip path length:            8069.687683196137
+
+
