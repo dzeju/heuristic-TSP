@@ -1,6 +1,7 @@
 import math
 import random
 from functools import partial
+from wrapt_timeout_decorator import *
 
 
 def distance(city1, city2):
@@ -98,6 +99,7 @@ class TravelingSalesman(object):
         self.penalties = 0
         self.number_of_nodes = len(self.cities)
 
+    @timeout(1, timeout_exception=TimeoutError)
     def run(self, func):
         self.reset()
         func()

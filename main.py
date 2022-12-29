@@ -6,6 +6,7 @@ import multiprocessing
 import signal
 from contextlib import contextmanager
 import tsplib95
+from wrapt_timeout_decorator import *
 
 import numpy
 
@@ -102,36 +103,15 @@ toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 toolbox.register("compile", gp.compile, pset=p_set)
 
 
-@contextmanager
-def timeout(time):
-    # Register a function to raise a TimeoutError on the signal.
-    signal.signal(signal.SIGALRM, raise_timeout)
-    # Schedule the signal to be sent after ``time``.
-    signal.alarm(time)
-
-    try:
-        yield
-    except TimeoutError:
-        pass
-    finally:
-        signal.signal(signal.SIGALRM, signal.SIG_IGN)
-
-
-def raise_timeout(signum, frame):
-    raise TimeoutError("Timeout")
+def run_individual(func, cities_coords):
+    total_distance, penalties = ts.run_multiple_cases(func, cities_coords)
+    return total_distance, penalties
 
 
 def eval_traveling_distance(individual):
     try:
         func = toolbox.compile(individual, pset=p_set)
-        total_distance, penalties = float('inf'), 1000
-        with timeout(1):
-            # ts.run(func)
-            total_distance, penalties = ts.run_multiple_cases(func, cities_coord)
-            # for cities in cities_coord:
-            #     ts.run(func, cities)
-            #     total_distance += ts.total_distance
-            #     penalties += ts.penalties
+        total_distance, penalties = run_individual(func, cities_coord)
         # return ts.total_distance,                         # <- this is the original
         # return (ts.total_distance + ts.penalties * 10),   # <- this is for single case
         return (total_distance + penalties * 10),         # <- this is for multiple cases
@@ -139,10 +119,10 @@ def eval_traveling_distance(individual):
         print(s_err)
         return float('inf'),
     except TimeoutError as t_err:
-        print(t_err)
+        # print(t_err)
         return float('inf'),
     except Exception as e:
-        print(e)
+        print('generic', e)
         # print(individual)
         # nodes, edges, labels = gp.graph(individual)
         # draw_tree(nodes, edges, labels)
