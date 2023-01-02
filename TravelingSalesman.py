@@ -13,7 +13,9 @@ def if_then_else(condition, out1, out2):
 
 
 def only_if(condition, out):
-    return out() if condition else None
+    def nothing():
+        pass
+    return out() if condition else nothing()
 
 
 class TravelingSalesman(object):
@@ -24,29 +26,25 @@ class TravelingSalesman(object):
         self.remaining_cities = [
             city for city in cities if city != self.start_city]
         self.picked_city = None
+        self.second_picked_city = None
         self.total_distance = float('inf')
         self.centroid = (sum([city[0] for city in cities]) / len(cities),
                          sum([city[1] for city in cities]) / len(cities))
         self.penalties = 0
         self.number_of_nodes = len(self.cities)
 
+    def insert_solution(self, solution):
+        self.path = solution
+        self.remaining_cities = []
+        self.calculate_total_distance()
+        self.penalties = 0
+
     def append_picked_city(self):
-        # Pick a random city from the remaining cities
-        # if self.picked_city in self.path:
-        #     raise Exception("City already in path")
-        # if self.picked_city in self.remaining_cities:
-        #     print('picked city: ', self.picked_city)
-        #     print('remaining cities: ', self.remaining_cities)
-        #     raise Exception("City still in remaining cities")
         if self.picked_city is not None:
             self.path.append(self.picked_city)
             self.picked_city = None
         else:
             self.penalties += 1
-        # if len(self.path) + len(self.remaining_cities) != len(self.cities):
-        #     print('path:      ', self.path)
-        #     print('remaining: ', self.remaining_cities)
-        #     raise Exception("Path and remaining cities do not add up")
 
     def insert_picked_city(self):
         if self.picked_city is not None:
@@ -122,13 +120,13 @@ class TravelingSalesman(object):
         else:
             self.calculate_total_distance()
 
-    def run_multiple_cases(self, func, cities_coords):
+    def run_multiple_cases(self, func, cities_coords, solutions):
         overall_total_distance = 0
         overall_penalties = 0
-        for cities in cities_coords:
+        for i, cities in enumerate(cities_coords):
             self.cities = cities
             self.run(func)
-            overall_total_distance += self.total_distance
+            overall_total_distance += self.total_distance / solutions[i]
             overall_penalties += self.penalties
         return overall_total_distance, overall_penalties
 
@@ -140,21 +138,23 @@ class TravelingSalesman(object):
 
     def if_centroid_farther_than_last_node(self, out1, out2):
         # self.find_nearest_neighbor_to_current_node()
-        if self.picked_city is None:
-            self.penalties += 1
-            # self.find_nearest_neighbor_to_current_node()
-            return self.do_nothing
-        return partial(if_then_else, self.distance_from_centroid(self.picked_city) >
-                       self.distance_from_current_node(self.picked_city), out1, out2)
+        def delegate():
+            if self.picked_city is None:
+                self.penalties += 1
+                return
+            partial(if_then_else, self.distance_from_centroid(self.picked_city) >
+                    self.distance_from_current_node(self.picked_city), out1, out2)
+        return delegate
 
     def if_starting_city_closer_than_last_node(self, out1, out2):
         # self.find_nearest_neighbor_to_current_node()
-        if self.picked_city is None:
-            self.penalties += 1
-            # self.find_nearest_neighbor_to_current_node()
-            return self.do_nothing
-        return partial(if_then_else, self.distance_to_starting_city(self.picked_city) <
-                       self.distance_from_current_node(self.picked_city), out1, out2,)
+        def delegate():
+            if self.picked_city is None:
+                self.penalties += 1
+                return
+            partial(if_then_else, self.distance_to_starting_city(self.picked_city) <
+                    self.distance_from_current_node(self.picked_city), out1, out2)
+        return delegate
 
     def if_any_remaining_cities(self, out):
         return partial(if_then_else, len(self.remaining_cities) > 0, out, self.do_nothing)
@@ -163,32 +163,84 @@ class TravelingSalesman(object):
         return partial(if_then_else, self.picked_city is not None, out1, out2)
 
     def if_half_remaining_cities(self, out1, out2):
-        return partial(if_then_else, len(self.remaining_cities) > len(self.cities)/2, out1, out2)
+        def delegate():
+            partial(if_then_else, len(self.remaining_cities)
+                    > len(self.cities)/2, out1, out2)
+        return delegate
+
+    def if_second_picked_city_farther_from_centroid(self, out1):
+        def delegate():
+            if self.picked_city is None or self.second_picked_city is None:
+                return
+            isFarther = self.distance_from_centroid(self.picked_city) < self.distance_from_centroid(
+                self.second_picked_city)
+            only_if(isFarther, out1)
+
+        return delegate
 
     def for_every_remaining_city(self, out):
-        def for_every():
+        def delegate():
             length = len(self.remaining_cities)
+            if length == 0:
+                self.penalties += 1
+                return
             for i in range(length):
                 out()
-        return for_every
+        return delegate
 
     def find_nearest_neighbor(self, city):
         # Find the nearest neighbor to city
         nearest_neighbor = None
+        second_nearest_neighbor = None
         nearest_distance = float('inf')
         length = len(self.remaining_cities)
+        if length == 0:
+            self.penalties += 1
         for i in range(length):
             curr_distance = distance(city, self.remaining_cities[i])
             if curr_distance < nearest_distance:
                 nearest_distance = curr_distance
+                second_nearest_neighbor = nearest_neighbor
                 nearest_neighbor = self.remaining_cities[i]
         # return nearest_neighbor
-        return nearest_neighbor
+        return nearest_neighbor, second_nearest_neighbor
+
+    def find_nearest_city_to_centroid(self):
+        # Find the nearest city to the centroid
+        self.pick_exact_city(self.find_nearest_neighbor(self.centroid))
 
     def find_nearest_neighbor_to_current_node(self):
         # Find the nearest neighbor to the current node
-        self.pick_exact_city(self.find_nearest_neighbor(self.path[-1]))
+        nearest_neighbor, self.second_picked_city = self.find_nearest_neighbor(
+            self.path[-1])
+
+        self.pick_exact_city(nearest_neighbor)
         # self.pick_random_city()
+
+    def find_furthest_neighbor_to_current_node(self):
+        # Find the furthest neighbor to the current node
+        furthest_neighbor = None
+        furthest_distance = 0
+        length = len(self.remaining_cities)
+        if length == 0:
+            self.penalties += 1
+        for i in range(length):
+            curr_distance = distance(self.path[-1], self.remaining_cities[i])
+            if curr_distance > furthest_distance:
+                furthest_distance = curr_distance
+                furthest_neighbor = self.remaining_cities[i]
+        self.pick_exact_city(furthest_neighbor)
+
+    def swap_last_two_cities(self):
+        # from 2-opt
+        try:
+            self.path[-1], self.path[-2] = self.path[-2], self.path[-1]
+        except IndexError:
+            self.penalties += 1
+            pass
+
+    def pick_second_nearest_neighbor(self):
+        self.pick_exact_city(self.second_picked_city)
 
     def remaining_cities(self):
         return len(self.remaining_cities)
@@ -208,12 +260,12 @@ class TravelingSalesman(object):
     # basic heuristics
     def nearest_neighbor_heuristic(self):
         try:
-            nearest_neighbor = self.find_nearest_neighbor(self.path[0])
+            nearest_neighbor, _ = self.find_nearest_neighbor(self.path[0])
             self.path.append(nearest_neighbor)
             self.remaining_cities.remove(nearest_neighbor)
             # find nearest neighbor for every remaining city
             while len(self.remaining_cities) > 0:
-                nearest_neighbor = self.find_nearest_neighbor(self.path[-1])
+                nearest_neighbor, _ = self.find_nearest_neighbor(self.path[-1])
                 self.path.append(nearest_neighbor)
                 self.remaining_cities.remove(nearest_neighbor)
             # add distance from last city to starting city
@@ -233,15 +285,16 @@ class TravelingSalesman(object):
         # 5. Repeat steps 2-4 until all cities have been visited
         # 6. Add the distance from the last city to the starting city
         try:
-            nearest_neighbor = self.find_nearest_neighbor(self.path[0])
+            nearest_neighbor, _ = self.find_nearest_neighbor(self.path[0])
             self.path.append(nearest_neighbor)
             self.remaining_cities.remove(nearest_neighbor)
             # find nearest neighbor for every remaining city
             while len(self.remaining_cities) > 0:
-                nearest_neighbor = self.find_nearest_neighbor(self.path[-1])
+                nearest_neighbor, _ = self.find_nearest_neighbor(self.path[-1])
                 self.pick_exact_city(nearest_neighbor)
-                self.if_starting_city_closer_than_last_node(
-                    self.insert_picked_city, self.append_picked_city)()
+                partial(if_then_else, self.distance_to_starting_city(self.picked_city) <
+                        self.distance_from_current_node(self.picked_city), self.insert_picked_city, self.append_picked_city)()
+
         except ValueError:
             print("Error in strip heuristic algorithm")
             print(self.path)

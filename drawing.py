@@ -4,6 +4,15 @@ import numpy
 from networkx.drawing.nx_agraph import graphviz_layout
 
 
+def draw_and_display(path, cities_coord):
+    plt.figure(4, figsize=(7, 7))
+    xy = numpy.array(path)
+    cities_coord2 = numpy.array(cities_coord)
+    plt.plot(xy[:, 0], xy[:, 1], 'ro-')
+    plt.plot(cities_coord2[:, 0], cities_coord2[:, 1], 'bo')
+    plt.show()
+
+
 def draw_fitness_curve(fitness_curve, folder_name):
     plt.figure(1, figsize=(7, 7))
     plt.plot(fitness_curve)

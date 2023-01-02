@@ -18,25 +18,36 @@ from deap import tools
 from deap import gp
 
 from TravelingSalesman import TravelingSalesman
-from drawing import draw_fitness_curve, draw_tree, draw_path
+from drawing import draw_fitness_curve, draw_tree, draw_path, draw_and_display
 
-# 10 cities coordinates
-# cities_coord = [[0, 0], [1, 0], [1, 1], [0, 1], [2, 0], [2, 1], [2, 2], [1, 2], [0, 2], [3, 0]]
-
-# image_points = BitMapPoints('shape2.png')
-# cities_coord = image_points.convert_to_list_of_points()
-
-# solution = tsplib95.load('ALL_tsp/ch130.opt.tour/ch130.opt.tour')
-# print(solution)
-# print(tsplib95.load('ALL_tsp/ch130.tsp').trace_tours(solution.tours))
-
-problems = [
-    # tsplib95.load('/Users/dzeju/Documents/PycharmProjects/heuristic-TSP/ALL_tsp/bayg29.tsp'),
-    # tsplib95.load('/Users/dzeju/Documents/PycharmProjects/heuristic-TSP/ALL_tsp/berlin52.tsp'),
-    # tsplib95.load('ALL_tsp/bier127.tsp'),
-    # tsplib95.load('ALL_tsp/burma14.tsp'),
-    tsplib95.load('ALL_tsp/ch130.tsp')
+file_names = [
+    'a280',
+    # 'att48',
+    # 'berlin52',
+    # 'gr202',
+    # 'kroA100',
+    'eil101',
 ]
+
+problems = []
+for file_name in file_names:
+    problems.append(tsplib95.load('ALL_tsp/' + file_name + '.tsp'))
+
+solutions = []
+for i, problem in enumerate(problems):
+    solution = tsplib95.load('ALL_tsp/' + file_names[i] + '.opt.tour')
+    solutions.append(problem.trace_tours(solution.tours)[0])
+
+solutions_paths = []
+for i, problem in enumerate(problems):
+    problem_path = list(tsplib95.load(
+        'ALL_tsp/' + file_names[i] + '.tsp').as_name_dict()['node_coords'].values())
+    solution_indexes = solution = tsplib95.load(
+        'ALL_tsp/' + file_names[i] + '.opt.tour').tours[0]
+    solutions_path = []
+    for index in solution_indexes:
+        solutions_path.append(problem_path[index - 1])
+    solutions_paths.append(solutions_path)
 
 
 cities_coord = list()
@@ -44,14 +55,6 @@ for problem in problems:
     cities_coord.append(list(problem.as_name_dict()['node_coords'].values()))
 
 ts = TravelingSalesman(cities_coord[0])
-
-# cities_coord = list(problem.as_name_dict()['display_data'].values())
-# print(cities_coord)
-
-
-# cities_coord = [(1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (1, 7), (1, 8), (1, 9), (1, 10)]
-# cities_coord = [[0, 0], [1, 0], [1, 1], [0, 1], [2, 0], [2, 1], [2, 2], [1, 2], [0, 2], [3, 0], [3, 1], [3, 2], [2, 3], [1, 3], [0, 3], [4, 0], [4, 1], [4, 2], [4, 3], [3, 4], [2, 4], [1, 4], [0, 4], [5, 0], [5, 1], [5, 2], [5, 3], [5, 4], [4, 5], [3, 5], [2, 5], [1, 5], [0, 5], [6, 0], [6, 1], [6, 2], [6, 3], [6, 4], [6, 5], [5, 6], [4, 6], [3, 6], [2, 6], [1, 6], [0, 6], [7, 0], [7, 1], [7, 2], [7, 3], [7, 4], [7, 5], [7, 6], [6, 7], [5, 7], [4, 7], [3, 7], [2, 7], [1, 7], [0, 7], [8, 0], [8, 1], [8, 2], [8, 3], [8, 4], [8, 5], [8, 6], [8, 7], [7, 8], [6, 8], [5, 8], [4, 8], [3, 8], [2, 8], [1, 8], [0, 8], [9, 0], [9, 1], [9, 2], [9, 3], [9, 4], [9, 5], [9, 6], [9, 7], [9, 8], [8, 9], [7, 9], [6, 9], [5, 9], [4, 9], [3, 9], [2, 9], [1, 9], [0, 9]]
-# cities_coord = numpy.array([[-1, 0], [0, 1], [1, 0], [0, -1], [0, 0], [1, 1], [1, -1], [-1, 1], [-1, -1], [2, 0]])
 
 
 def protected_div(left, right):
@@ -83,24 +86,25 @@ def prog4(out1, out2, out3, out4):
 
 
 p_set = gp.PrimitiveSet("MAIN", 0)
-# p_set.addPrimitive(ts.full_nearest_neighbor_algorithm, 1)
 p_set.addPrimitive(ts.for_every_remaining_city, 1,
-                   name="for_every_remaining_city")
-# p_set.addPrimitive(ts.pick_exact_city, 1, name="pick_exact_city")
+                   name="FOR_REM_CITIES")
 p_set.addPrimitive(ts.if_starting_city_closer_than_last_node, 2, name="IF_SC")
 p_set.addPrimitive(ts.if_centroid_farther_than_last_node, 2, name="IF_CF")
-# p_set.addPrimitive(ts.if_any_remaining_cities, 1, name="IF_ARC")
-# p_set.addPrimitive(ts.if_half_remaining_cities, 2, name="IF_HRC")
-# p_set.addTerminal(ts.pick_random_city, name="T_PRC")
+p_set.addPrimitive(ts.if_half_remaining_cities, 2, name="IF_HRC")
+p_set.addPrimitive(
+    ts.if_second_picked_city_farther_from_centroid, 1, name="IF_SPCFC")
 p_set.addTerminal(ts.append_picked_city, name="T_append")
 p_set.addTerminal(ts.insert_picked_city, name="T_insert")
-p_set.addTerminal(ts.find_nearest_neighbor_to_current_node, name="T_find_n_n")
+p_set.addTerminal(ts.find_nearest_neighbor_to_current_node, name="T_F_NN")
+p_set.addTerminal(ts.find_furthest_neighbor_to_current_node, name="T_F_FN")
+p_set.addTerminal(ts.find_nearest_city_to_centroid, name="T_F_CENT")
+p_set.addTerminal(ts.pick_second_nearest_neighbor, name="T_P_SNN")
+p_set.addTerminal(ts.swap_last_two_cities, name="T_SWAP")
 
 p_set.addPrimitive(prog1, 1)
 p_set.addPrimitive(prog2, 2)
 p_set.addPrimitive(prog3, 3)
 # p_set.addPrimitive(prog4, 4)
-
 
 creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
 creator.create("Individual", gp.PrimitiveTree, fitness=creator.FitnessMin)
@@ -113,18 +117,14 @@ toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 toolbox.register("compile", gp.compile, pset=p_set)
 
 
-def run_individual(func, cities_coords):
-    total_distance, penalties = ts.run_multiple_cases(func, cities_coords)
-    return total_distance, penalties
-
-
 def eval_traveling_distance(individual):
     try:
         func = toolbox.compile(individual, pset=p_set)
-        total_distance, penalties = run_individual(func, cities_coord)
+
         # return ts.total_distance,                         # <- this is the original
         # return (ts.total_distance + ts.penalties * 10),   # <- this is for single case
-        # <- this is for multiple cases
+        total_distance, penalties = ts.run_multiple_cases(
+            func, cities_coord, solutions)  # <- this is for multiple cases
         return (total_distance + penalties * 10),
     except SyntaxError as s_err:
         print(s_err)
@@ -140,38 +140,14 @@ def eval_traveling_distance(individual):
         return float('inf'),
 
 
-# toolbox.register("evaluate", eval_traveling_distance)
 toolbox.register("evaluate", eval_traveling_distance)
-toolbox.register("select", tools.selTournament, tournsize=5)
+toolbox.register("select", tools.selTournament, tournsize=3)
 toolbox.register("mate", gp.cxOnePoint)
 toolbox.register("expr_mut", gp.genFull, min_=0, max_=3)
 toolbox.register("mutate", gp.mutUniform, expr=toolbox.expr_mut, pset=p_set)
 
 
-def main():
-    random.seed(318)
-
-    pop = toolbox.population(n=50)
-    # print(pop[0])
-    hof = tools.HallOfFame(1)
-    stats_fit = tools.Statistics(lambda ind: ind.fitness.values)
-    mstats = tools.MultiStatistics(fitness=stats_fit)
-    mstats.register("avg", numpy.mean)
-    mstats.register("std", numpy.std)
-    mstats.register("min", numpy.min)
-    mstats.register("max", numpy.max)
-
-    cxpb, mutpb, ngen = 0.5, 0.2, 2
-
-    pop, log = algorithms.eaSimple(pop, toolbox, cxpb, mutpb, ngen, stats=mstats,
-                                   halloffame=hof, verbose=True)
-
-    best_indiv = hof[0]
-    func = toolbox.compile(best_indiv, pset=p_set)
-
-    # print(toolbox.__getattribute__('expr_mut'))
-    # return
-
+def save_logs_and_drawings(best_indiv, cities_coord, func, mutpb, cxpb, ngen, log):
     drawings_list = []
 
     date_time = str(datetime.datetime.now())
@@ -197,18 +173,9 @@ def main():
         ts.run_specific_case(ts.strip_heuristic, cities)
         strip_copy = copy.deepcopy(ts)
 
-        print('evolution path length:        ', best_indiv_copy.total_distance)
-        print('nearest neighbor path length: ',
-              nearest_neighbor_copy.total_distance)
-        print('strip path length:            ', strip_copy.total_distance)
+        ts.insert_solution(solutions_paths[i])
+        solution_copy = copy.deepcopy(ts)
 
-        drawings = {'evolution': best_indiv_copy.path,
-                    'nearest_neighbour': nearest_neighbor_copy.path,
-                    'strip': strip_copy.path}
-
-        drawings_list.append(drawings)
-
-        # draw_path(drawings, cities_coord[i])
         name = problems[i].as_name_dict()['name']
 
         result_list = ['\n',
@@ -218,9 +185,20 @@ def main():
                        'nearest neighbor path length: ' +
                        str(nearest_neighbor_copy.total_distance),
                        'strip path length:            ' +
-                       str(strip_copy.total_distance)]
+                       str(strip_copy.total_distance),
+                       'optimal path length:          ' +
+                       str(solution_copy.total_distance)]
 
-        file.writelines("% s\n" % data for data in result_list)
+        for j, result in enumerate(result_list):
+            print(result)
+            file.writelines([result + '\n'])
+
+        drawings = {'evolution': best_indiv_copy.path,
+                    'nearest_neighbour': nearest_neighbor_copy.path,
+                    'strip': strip_copy.path,
+                    'optimal': solution_copy.path}
+
+        drawings_list.append(drawings)
 
     file.close()
 
@@ -233,12 +211,72 @@ def main():
         name = problems[i].as_name_dict()['name']
         draw_path(drawings, cities_coord[i], name, date_time)
 
-    # draw first created tree
-    # nodes, edges, labels = gp.graph(pop[0])
-    # draw_tree(nodes, edges, labels)
+
+def main():
+    random.seed(318)
+
+    pop = toolbox.population(n=100)
+    hof = tools.HallOfFame(1)
+    stats_fit = tools.Statistics(lambda ind: ind.fitness.values)
+    mstats = tools.MultiStatistics(fitness=stats_fit)
+    mstats.register("avg", numpy.mean)
+    mstats.register("std", numpy.std)
+    mstats.register("min", numpy.min)
+    mstats.register("max", numpy.max)
+
+    cxpb, mutpb, ngen = 0.5, 0.2, 500
+
+    pop, log = algorithms.eaSimple(pop, toolbox, cxpb, mutpb, ngen, stats=mstats,
+                                   halloffame=hof, verbose=True)
+
+    best_indiv = hof[0]
+    func = toolbox.compile(best_indiv, pset=p_set)
+
+    save_logs_and_drawings(best_indiv, cities_coord,
+                           func, mutpb, cxpb, ngen, log)
+
+
+def check_solution_algorithm():
+    try:
+        individual = input('Individual: ')
+        func = toolbox.compile(individual, pset=p_set)
+    except SyntaxError as e:
+        print('Wrong individual: ', e)
+        return
+
+    for i, cities in enumerate(cities_coord):
+        ts.run_specific_case(func, cities)
+        best_indiv_copy = copy.deepcopy(ts)
+
+        ts.run_specific_case(ts.nearest_neighbor_heuristic, cities)
+        nearest_neighbor_copy = copy.deepcopy(ts)
+
+        ts.run_specific_case(ts.strip_heuristic, cities)
+        strip_copy = copy.deepcopy(ts)
+
+        ts.insert_solution(solutions_paths[i])
+        solution_copy = copy.deepcopy(ts)
+
+        print('\nevolution path length:        ',
+              best_indiv_copy.total_distance)
+        print('nearest neighbor path length: ',
+              nearest_neighbor_copy.total_distance)
+        print('strip path length:            ', strip_copy.total_distance)
+        print('optimal path length:          ', solution_copy.total_distance)
+
+        draw_and_display(best_indiv_copy.path, cities)
 
 
 if __name__ == '__main__':
-    pool = multiprocessing.Pool()
-    toolbox.register("map", pool.map)
-    main()
+    print('1. run evolution algorithm',
+          '2. check solution algorithm', sep='\n')
+
+    choice = input('Choice: ')
+
+    if choice == '1':
+        pool = multiprocessing.Pool()
+        toolbox.register("map", pool.map)
+        main()
+        pool.close()
+    elif choice == '2':
+        check_solution_algorithm()

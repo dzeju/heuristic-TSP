@@ -1,0 +1,53 @@
+2022-12-31 17:33:01.080063
+
+mutpb: 0.2
+cxpb: 0.5
+ngen: 500
+
+best individual: prog1(FOR_REM_CITIES(prog2(prog3(prog3(T_F_NN, T_SWAP, T_SWAP), IF_HRC(prog1(T_F_NN), IF_HRC(T_F_FN, T_SWAP)), prog1(IF_HRC(T_append, IF_HRC(IF_CF(prog1(T_insert), T_F_NN), FOR_REM_CITIES(IF_SC(T_F_FN, T_append)))))), T_append)))
+
+expr_mut: functools.partial(<function genFull at 0x7f69c64de170>, min_=0, max_=3)
+select: functools.partial(<function selTournament at 0x7f69c68e9c60>, tournsize=3)
+mate: functools.partial(<function cxOnePoint at 0x7f69c64de440>)
+mutate: functools.partial(<function mutUniform at 0x7f69c64de560>, expr=functools.partial(<function genFull at 0x7f69c64de170>, min_=0, max_=3), pset=<deap.gp.PrimitiveSet object at 0x7f69dc72a3e0>)
+
+a280
+evolution path length:        3148.109934934404
+nearest neighbor path length: 3148.109934934404
+strip path length:            3180.911058576858
+optimal path length:          2586.7696475631606
+
+
+att48
+evolution path length:        40526.42105630375
+nearest neighbor path length: 40526.42105630375
+strip path length:            56099.61587953999
+optimal path length:          33523.70850743559
+
+
+berlin52
+evolution path length:        8980.918279329191
+nearest neighbor path length: 8980.918279329191
+strip path length:            11633.825022348099
+optimal path length:          7544.365901904087
+
+
+gr202
+evolution path length:        619.3953534350103
+nearest neighbor path length: 619.3953534350103
+strip path length:            726.4419445065452
+optimal path length:          549.9980703917479
+
+
+kroA100
+evolution path length:        26856.388591241608
+nearest neighbor path length: 26856.388591241608
+strip path length:            33429.85737847612
+optimal path length:          21285.44318157108
+
+
+eil101
+evolution path length:        825.2423227277445
+nearest neighbor path length: 825.2423227277445
+strip path length:            791.6905341690763
+optimal path length:          642.3095357906022
