@@ -1,0 +1,12 @@
+2023-01-02 07:25:50.351932
+
+mutpb: 0.2
+cxpb: 0.5
+ngen: 5
+
+best individual: prog1(FOR_REM_CITIES(prog2(prog3(prog1(T_F_CENT), prog1(IF_SPCFC(IF_SC(T_P_SNN, T_F_FN))), T_F_NN), T_insert)))
+
+expr_mut: functools.partial(<function genFull at 0x1027c00d0>, min_=0, max_=3)
+select: functools.partial(<function selTournament at 0x10278eca0>, tournsize=3)
+mate: functools.partial(<function cxOnePoint at 0x1027c03a0>)
+mutate: functools.partial(<function mutUniform at 0x1027c04c0>, expr=functools.partial(<function genFull at 0x1027c00d0>, min_=0, max_=3), pset=<deap.gp.PrimitiveSet object at 0x114447cd0>)

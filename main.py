@@ -224,7 +224,7 @@ def main():
     mstats.register("min", numpy.min)
     mstats.register("max", numpy.max)
 
-    cxpb, mutpb, ngen = 0.5, 0.2, 500
+    cxpb, mutpb, ngen = 0.5, 0.2, 5
 
     pop, log = algorithms.eaSimple(pop, toolbox, cxpb, mutpb, ngen, stats=mstats,
                                    halloffame=hof, verbose=True)
@@ -232,8 +232,10 @@ def main():
     best_indiv = hof[0]
     func = toolbox.compile(best_indiv, pset=p_set)
 
-    save_logs_and_drawings(best_indiv, cities_coord,
-                           func, mutpb, cxpb, ngen, log)
+    toSave = input('Save results? (y/n): ')
+    if toSave == 'y' or toSave == 'Y' or toSave == '':
+        save_logs_and_drawings(best_indiv, cities_coord,
+                               func, mutpb, cxpb, ngen, log)
 
 
 def check_solution_algorithm():
