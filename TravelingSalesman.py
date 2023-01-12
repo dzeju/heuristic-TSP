@@ -2,6 +2,7 @@ import math
 import random
 from functools import partial
 from wrapt_timeout_decorator import *
+import numpy
 
 
 def distance(city1, city2):
@@ -285,15 +286,13 @@ class TravelingSalesman(object):
             print(self.start_city)
 
     def strip_heuristic(self):
-        # (Daganzo, 1984)
-        # 1. Find the nearest neighbor to the starting city
-        # 2. Find the nearest neighbor to the last city
-        # 3. If the distance from the starting city to the nearest neighbor is less than the distance
-        # from the last city to the nearest neighbor, then the nearest neighbor is the starting city
-        # 4. Otherwise, the nearest neighbor is the last city
-        # 5. Repeat steps 2-4 until all cities have been visited
-        # 6. Add the distance from the last city to the starting city
         try:
+            # 1. Divide the set of cities into vertical strips of equal width.
+            # 2. Iterate over the strips in order.
+            # 3. For each odd-index strip, visit the cities in non-decreasing order of ordinates.
+            # 4. For each even-index strip, visit the cities in non-increasing order of ordinates.
+            # 5. Repeat steps 3 and 4 until all cities have been visited.
+
             nearest_neighbor, _ = self.find_nearest_neighbor(self.path[0])
             self.path.append(nearest_neighbor)
             self.remaining_cities.remove(nearest_neighbor)
@@ -303,6 +302,32 @@ class TravelingSalesman(object):
                 self.pick_exact_city(nearest_neighbor)
                 partial(if_then_else, self.distance_to_starting_city(self.picked_city) <
                         self.distance_from_current_node(self.picked_city), self.insert_picked_city, self.append_picked_city)()
+
+            # self.path = []
+            # width = int(len(self.cities) / 10)
+            # print(width)
+            # num_strips = int(max(numpy.array(self.cities)[:, 0]) / width) + 1
+            # print(num_strips)
+            # strips = [[] for _ in range(num_strips)]
+            # for city in self.cities:
+            #     strip_index = int(city[0] / width)
+            #     strips[strip_index].append(city)
+
+            # for strip in strips:
+            #     strip.sort(key=lambda x: x[1])
+
+            # for i, strip in enumerate(strips):
+            #     # Visit the cities in non-decreasing order of ordinates for odd-index strips
+            #     # and in non-increasing order of ordinates for even-index strips
+            #     if i % 2 == 0:
+            #         order = 1
+            #     else:
+            #         order = -1
+            #     for city in strip[::order]:
+            #         if city not in self.path:
+            #             self.path.append(city)
+
+            # print(len(self.path), len(self.cities))
 
         except ValueError:
             print("Error in strip heuristic algorithm")
