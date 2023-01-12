@@ -81,13 +81,16 @@ class TravelingSalesman(object):
     def distance_to_starting_city(self, city):
         return distance(city, self.start_city)
 
+    def calculate_given_path_distance(self, path):
+        total_distance = 0
+        for i in range(len(path)-1):
+            total_distance += distance(path[i], path[i+1])
+        total_distance += self.distance_to_starting_city(path[-1])
+        return total_distance
+
     def calculate_total_distance(self):
         # Calculate the total distance of the path
-        total_distance = 0
-        for i in range(len(self.path)-1):
-            total_distance += distance(self.path[i], self.path[i+1])
-        total_distance += self.distance_to_starting_city(self.path[-1])
-        self.total_distance = total_distance
+        self.total_distance = self.calculate_given_path_distance(self.path)
 
     def reset(self):
         self.start_city = self.cities[0]
@@ -231,10 +234,16 @@ class TravelingSalesman(object):
                 furthest_neighbor = self.remaining_cities[i]
         self.pick_exact_city(furthest_neighbor)
 
-    def swap_last_two_cities(self):
+    def if_two_change(self):
         # from 2-opt
+        city1 = random.randint(0, len(self.path) - 1)
+        city2 = random.randint(0, len(self.path) - 1)
+        path_copy = self.path.copy()
+
         try:
-            self.path[-1], self.path[-2] = self.path[-2], self.path[-1]
+            path_copy[city1], path_copy[city2] = path_copy[city2], path_copy[city1]
+            if (self.calculate_given_path_distance(path_copy) < self.calculate_given_path_distance(self.path)):
+                self.path = path_copy
         except IndexError:
             self.penalties += 1
             pass

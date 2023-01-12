@@ -1,0 +1,25 @@
+2023-01-11 17:42:37.249358
+
+mutpb: 0.2
+cxpb: 0.5
+ngen: 100
+
+best individual: FOR_REM_CITIES(prog3(T_F_NN, T_append, IF_SPCFC(IF_SC(prog1(prog3(T_F_NN, T_insert, IF_SPCFC(IF_SC(prog1(prog2(prog1(prog2(prog1(T_SWAP), FOR_REM_CITIES(T_SWAP))), FOR_REM_CITIES(IF_CF(T_F_FN, T_insert)))), prog3(IF_CF(IF_SPCFC(prog3(T_F_FN, T_SWAP, T_SWAP)), IF_SC(IF_HRC(T_F_NN, T_F_FN), IF_SPCFC(T_insert))), prog1(prog2(prog1(T_P_SNN), FOR_REM_CITIES(T_SWAP))), prog3(IF_SPCFC(IF_SPCFC(T_insert)), IF_SC(T_F_NN, T_F_FN), IF_HRC(IF_SPCFC(T_SWAP), IF_CF(T_F_CENT, T_F_CENT)))))))), IF_CF(T_append, T_SWAP)))))
+
+expr_mut: functools.partial(<function genFull at 0x7f50559e6170>, min_=0, max_=7)
+select: functools.partial(<function selTournament at 0x7f5055df1c60>, tournsize=3)
+mate: functools.partial(<function cxOnePoint at 0x7f5054932b90>)
+mutate: functools.partial(<function mutUniform at 0x7f5054932c20>, expr=functools.partial(<function genFull at 0x7f50559e6170>, min_=0, max_=7), pset=<deap.gp.PrimitiveSet object at 0x7f506bc7a500>)
+
+a280
+evolution path length:        3148.109934934404
+nearest neighbor path length: 3148.109934934404
+strip path length:            3180.911058576858
+optimal path length:          2586.7696475631606
+
+
+eil101
+evolution path length:        825.2423227277445
+nearest neighbor path length: 825.2423227277445
+strip path length:            791.6905341690763
+optimal path length:          642.3095357906022

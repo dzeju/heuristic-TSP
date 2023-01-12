@@ -1,0 +1,53 @@
+2023-01-11 20:00:45.428787
+
+mutpb: 0.2
+cxpb: 0.5
+ngen: 500
+
+best individual: FOR_REM_CITIES(prog4(IF_HRC(prog2(prog2(T_F_NN, T_F_NN), IF_HRC(T_IF_SWAP, T_append)), IF_HRC(IF_SPCFC(T_P_SNN), prog3(T_F_NN, prog4(prog2(T_P_SNN, FOR_REM_CITIES(IF_SPCFC(T_F_NN))), FOR_REM_CITIES(FOR_REM_CITIES(IF_SC(T_F_CENT, T_append))), prog3(IF_SPCFC(FOR_REM_CITIES(T_F_CENT)), IF_HRC(IF_HRC(T_append, T_F_CENT), prog2(T_P_SNN, T_append)), FOR_REM_CITIES(IF_HRC(prog2(T_P_SNN, T_append), IF_CF(T_insert, T_F_FN)))), IF_HRC(IF_HRC(IF_HRC(T_insert, T_append), FOR_REM_CITIES(T_append)), prog4(FOR_REM_CITIES(T_insert), FOR_REM_CITIES(T_F_CENT), IF_SC(T_insert, T_insert), FOR_REM_CITIES(T_F_CENT)))), T_append))), T_IF_SWAP, T_F_NN, T_append))
+
+expr_mut: functools.partial(<function genFull at 0x7f24a8cde0e0>, min_=0, max_=4)
+select: functools.partial(<function selTournament at 0x7f24a90e9bd0>, tournsize=10)
+mate: functools.partial(<function cxOnePoint at 0x7f24a7c26d40>)
+mutate: functools.partial(<function mutUniform at 0x7f24a7c26dd0>, expr=functools.partial(<function genFull at 0x7f24a8cde0e0>, min_=0, max_=4), pset=<deap.gp.PrimitiveSet object at 0x7f24bef764a0>)
+
+a280
+evolution path length:        3191.5961100607983
+nearest neighbor path length: 3148.109934934404
+strip path length:            3180.911058576858
+optimal path length:          2586.7696475631606
+
+
+att48
+evolution path length:        42463.57473778716
+nearest neighbor path length: 40526.42105630375
+strip path length:            56099.61587953999
+optimal path length:          33523.70850743559
+
+
+berlin52
+evolution path length:        9082.490336697514
+nearest neighbor path length: 8980.918279329191
+strip path length:            11633.825022348099
+optimal path length:          7544.365901904087
+
+
+gr202
+evolution path length:        624.4258166150489
+nearest neighbor path length: 619.3953534350103
+strip path length:            726.4419445065452
+optimal path length:          549.9980703917479
+
+
+kroA100
+evolution path length:        27038.80662789068
+nearest neighbor path length: 26856.388591241608
+strip path length:            33429.85737847612
+optimal path length:          21285.44318157108
+
+
+eil101
+evolution path length:        779.0435322062101
+nearest neighbor path length: 825.2423227277445
+strip path length:            791.6905341690763
+optimal path length:          642.3095357906022

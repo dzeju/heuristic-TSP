@@ -16,16 +16,17 @@ from deap import base
 from deap import creator
 from deap import tools
 from deap import gp
+import operator
 
 from TravelingSalesman import TravelingSalesman
 from drawing import draw_fitness_curve, draw_tree, draw_path, draw_and_display
 
 file_names = [
     'a280',
-    # 'att48',
-    # 'berlin52',
-    # 'gr202',
-    # 'kroA100',
+    'att48',
+    'berlin52',
+    'gr202',
+    'kroA100',
     'eil101',
 ]
 
@@ -99,18 +100,17 @@ p_set.addTerminal(ts.find_nearest_neighbor_to_current_node, name="T_F_NN")
 p_set.addTerminal(ts.find_furthest_neighbor_to_current_node, name="T_F_FN")
 p_set.addTerminal(ts.find_nearest_city_to_centroid, name="T_F_CENT")
 p_set.addTerminal(ts.pick_second_nearest_neighbor, name="T_P_SNN")
-p_set.addTerminal(ts.swap_last_two_cities, name="T_SWAP")
+p_set.addTerminal(ts.if_two_change, name="T_IF_SWAP")
 
-p_set.addPrimitive(prog1, 1)
 p_set.addPrimitive(prog2, 2)
 p_set.addPrimitive(prog3, 3)
-# p_set.addPrimitive(prog4, 4)
+p_set.addPrimitive(prog4, 4)
 
 creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
 creator.create("Individual", gp.PrimitiveTree, fitness=creator.FitnessMin)
 
 toolbox = base.Toolbox()
-toolbox.register("expr", gp.genHalfAndHalf, pset=p_set, min_=1, max_=5)
+toolbox.register("expr", gp.genHalfAndHalf, pset=p_set, min_=1, max_=8)
 toolbox.register("individual", tools.initIterate,
                  creator.Individual, toolbox.expr)
 toolbox.register("population", tools.initRepeat, list, toolbox.individual)
@@ -128,23 +128,27 @@ def eval_traveling_distance(individual):
         return (total_distance + penalties * 10),
     except SyntaxError as s_err:
         print(s_err)
-        return float('inf'),
+        return 100,
     except TimeoutError as t_err:
         # print(t_err)
-        return float('inf'),
+        return 100,
     except Exception as e:
         print('generic', e)
         # print(individual)
         # nodes, edges, labels = gp.graph(individual)
         # draw_tree(nodes, edges, labels)
-        return float('inf'),
+        return 100,
 
 
 toolbox.register("evaluate", eval_traveling_distance)
-toolbox.register("select", tools.selTournament, tournsize=3)
+toolbox.register("select", tools.selTournament, tournsize=10)
 toolbox.register("mate", gp.cxOnePoint)
-toolbox.register("expr_mut", gp.genFull, min_=0, max_=3)
+toolbox.register("expr_mut", gp.genFull, min_=0, max_=4)
 toolbox.register("mutate", gp.mutUniform, expr=toolbox.expr_mut, pset=p_set)
+toolbox.decorate("mate", gp.staticLimit(
+    key=operator.attrgetter("height"), max_value=10))
+toolbox.decorate("mutate", gp.staticLimit(
+    key=operator.attrgetter("height"), max_value=10))
 
 
 def save_logs_and_drawings(best_indiv, cities_coord, func, mutpb, cxpb, ngen, log):
@@ -215,7 +219,7 @@ def save_logs_and_drawings(best_indiv, cities_coord, func, mutpb, cxpb, ngen, lo
 def main():
     random.seed(318)
 
-    pop = toolbox.population(n=100)
+    pop = toolbox.population(n=500)
     hof = tools.HallOfFame(1)
     stats_fit = tools.Statistics(lambda ind: ind.fitness.values)
     mstats = tools.MultiStatistics(fitness=stats_fit)
