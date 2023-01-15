@@ -18,13 +18,34 @@ def only_if(condition, out):
         pass
     return out() if condition else nothing()
 
+
+def line_intersection(p1, p2, p3, p4):
+    s1_x = p2[0] - p1[0]
+    s1_y = p2[1] - p1[1]
+    s2_x = p4[0] - p3[0]
+    s2_y = p4[1] - p3[1]
+
+    try:
+        s = (-s1_y * (p1[0] - p3[0]) + s1_x * (p1[1] - p3[1])) / \
+            (-s2_x * s1_y + s1_x * s2_y)
+        t = (s2_x * (p1[1] - p3[1]) - s2_y * (p1[0] - p3[0])) / \
+            (-s2_x * s1_y + s1_x * s2_y)
+
+        if s >= 0 and s <= 1 and t >= 0 and t <= 1:
+            # Collision detected
+            return True
+
+        return False  # No collision
+    except ZeroDivisionError:
+        return False
+
+
 # eliminacja krzyrzówek
 # proste test casy
 # semantic baśckpropagation
 # efekt bandlina
 # lamarka
 # kształty?
-
 
 class TravelingSalesman(object):
     def __init__(self, cities):
@@ -179,6 +200,7 @@ class TravelingSalesman(object):
                     > len(self.cities)/2, out1, out2)
         return delegate
 
+    # if the second picked city is farther from the centroid than the picked city then do out1
     def if_second_picked_city_farther_from_centroid(self, out1):
         def delegate():
             if self.picked_city is None or self.second_picked_city is None:
@@ -189,6 +211,7 @@ class TravelingSalesman(object):
 
         return delegate
 
+    # iterate over the remaining cities
     def for_every_remaining_city(self, out):
         def delegate():
             length = len(self.remaining_cities)
@@ -197,6 +220,41 @@ class TravelingSalesman(object):
                 return
             for i in range(length):
                 out()
+        return delegate
+
+    # iterate over the path
+    def for_every_city_in_path(self, out):
+        def delegate():
+            length = len(self.path)
+            if length == 0:
+                self.penalties += 1
+                return
+            for i in range(length):
+                out()
+        return delegate
+
+    # if the picked city crosses the path, do out1, else do out2
+    def if_picked_city_crosses_path(self, out1, out2):
+        def delegate():
+            if self.picked_city is None:
+                # self.penalties += 1
+                return
+            for i in range(len(self.path)-1):
+                if line_intersection(self.picked_city, self.path[-1], self.path[i], self.path[i+1]):
+                    out1()
+                    return
+            out2()
+        return delegate
+
+    # if the picked city crosses the path, swap it with the last city in the path
+    def swap_cities_if_crossing_path(self):
+        def delegate():
+            if self.picked_city is None:
+                return
+            for i in range(len(self.path)-1):
+                if line_intersection(self.picked_city, self.path[-1], self.path[i], self.path[i+1]):
+                    self.picked_city, self.path[-1] = self.path[-1], self.picked_city
+                    return
         return delegate
 
     def find_nearest_neighbor(self, city):
@@ -216,10 +274,11 @@ class TravelingSalesman(object):
         # return nearest_neighbor
         return nearest_neighbor, second_nearest_neighbor
 
+    # Find the nearest city to the centroid
     def find_nearest_city_to_centroid(self):
-        # Find the nearest city to the centroid
         self.pick_exact_city(self.find_nearest_neighbor(self.centroid))
 
+    # Find the nearest city to the current node
     def find_nearest_neighbor_to_current_node(self):
         # Find the nearest neighbor to the current node
         nearest_neighbor, self.second_picked_city = self.find_nearest_neighbor(
@@ -228,6 +287,7 @@ class TravelingSalesman(object):
         self.pick_exact_city(nearest_neighbor)
         # self.pick_random_city()
 
+    # Find the furthest city to the current node
     def find_furthest_neighbor_to_current_node(self):
         # Find the furthest neighbor to the current node
         furthest_neighbor = None
@@ -300,44 +360,81 @@ class TravelingSalesman(object):
             # 4. For each even-index strip, visit the cities in non-increasing order of ordinates.
             # 5. Repeat steps 3 and 4 until all cities have been visited.
 
-            nearest_neighbor, _ = self.find_nearest_neighbor(self.path[0])
-            self.path.append(nearest_neighbor)
-            self.remaining_cities.remove(nearest_neighbor)
-            # find nearest neighbor for every remaining city
-            while len(self.remaining_cities) > 0:
-                nearest_neighbor, _ = self.find_nearest_neighbor(self.path[-1])
-                self.pick_exact_city(nearest_neighbor)
-                partial(if_then_else, self.distance_to_starting_city(self.picked_city) <
-                        self.distance_from_current_node(self.picked_city), self.insert_picked_city, self.append_picked_city)()
+            # nearest_neighbor, _ = self.find_nearest_neighbor(self.path[0])
+            # self.path.append(nearest_neighbor)
+            # self.remaining_cities.remove(nearest_neighbor)
+            # # find nearest neighbor for every remaining city
+            # while len(self.remaining_cities) > 0:
+            #     nearest_neighbor, _ = self.find_nearest_neighbor(self.path[-1])
+            #     self.pick_exact_city(nearest_neighbor)
+            #     partial(if_then_else, self.distance_to_starting_city(self.picked_city) <
+            #             self.distance_from_current_node(self.picked_city), self.insert_picked_city, self.append_picked_city)()
 
-            # self.path = []
-            # width = int(len(self.cities) / 10)
-            # print(width)
-            # num_strips = int(max(numpy.array(self.cities)[:, 0]) / width) + 1
-            # print(num_strips)
-            # strips = [[] for _ in range(num_strips)]
-            # for city in self.cities:
-            #     strip_index = int(city[0] / width)
-            #     strips[strip_index].append(city)
+            self.path = []
+            width = int(len(self.cities) / 5)
+            num_strips = int(max(numpy.array(self.cities)[:, 0]) / width) + 1
+            strips = [[] for _ in range(num_strips)]
+            for city in self.cities:
+                strip_index = int(city[0] / width)
+                strips[strip_index].append(city)
 
-            # for strip in strips:
-            #     strip.sort(key=lambda x: x[1])
+            for strip in strips:
+                strip.sort(key=lambda x: x[1])
 
-            # for i, strip in enumerate(strips):
-            #     # Visit the cities in non-decreasing order of ordinates for odd-index strips
-            #     # and in non-increasing order of ordinates for even-index strips
-            #     if i % 2 == 0:
-            #         order = 1
-            #     else:
-            #         order = -1
-            #     for city in strip[::order]:
-            #         if city not in self.path:
-            #             self.path.append(city)
+            for i, strip in enumerate(strips):
+                # Visit the cities in non-decreasing order of ordinates for odd-index strips
+                # and in non-increasing order of ordinates for even-index strips
+                if i % 2 == 0:
+                    order = 1
+                else:
+                    order = -1
+                for city in strip[::order]:
+                    if city not in self.path:
+                        self.path.append(city)
 
-            # print(len(self.path), len(self.cities))
-
+            print(len(self.path), len(self.cities))
         except ValueError:
             print("Error in strip heuristic algorithm")
             print(self.path)
             print(self.remaining_cities)
             print(self.start_city)
+
+    def nearest_insertion_heuristic(self):
+        # 1. Select the shortest edge, and make a subtour of it.
+        # 2. Select a city not in the subtour, having the shortest distance to any one of the cities in the subtoor.
+        # 3. Find an edge in the subtour such that the cost of inserting the selected city between the edge’s cities will be minimal.
+        # 4. Repeat step 2 until no more cities remain.
+
+        def find_shortest_edge():
+            shortest_edge = None
+            shortest_distance = 0
+            for i in range(len(self.remaining_cities)):
+                for j in range(i + 1, len(self.path)):
+                    curr_distance = distance(
+                        self.remaining_cities[i], self.remaining_cities[j])
+                    if curr_distance < shortest_distance:
+                        shortest_distance = curr_distance
+                        shortest_edge = (
+                            self.remaining_cities[i], self.remaining_cities[j])
+            return shortest_edge
+
+        self.path = []
+        self.remaining_cities = self.cities.copy()
+
+        # 1. Select the shortest edge, and make a subtour of it.
+        shortest_edge = find_shortest_edge()
+        self.path.append(shortest_edge[0])
+        self.remaining_cities.remove(shortest_edge[0])
+
+        # 2. Select a city not in the subtour, having the shortest distance to any one of the cities in the subtoor.
+        nearest_neighbor, _ = self.find_nearest_neighbor(self.path[0])
+        self.path.append(nearest_neighbor)
+        self.remaining_cities.remove(nearest_neighbor)
+
+        # 3. Find an edge in the subtour such that the cost of inserting the selected city between the edge’s cities will be minimal.
+        # 4. Repeat step 2 until no more cities remain.
+        while len(self.remaining_cities) > 0:
+            nearest_neighbor, _ = self.find_nearest_neighbor(self.path[-1])
+            self.pick_exact_city(nearest_neighbor)
+            partial(if_then_else, self.distance_to_starting_city(self.picked_city) <
+                    self.distance_from_current_node(self.picked_city), self.insert_picked_city, self.append_picked_city)()

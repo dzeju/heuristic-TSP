@@ -21,39 +21,49 @@ import operator
 from TravelingSalesman import TravelingSalesman
 from drawing import draw_fitness_curve, draw_tree, draw_path, draw_and_display
 
-file_names = [
-    'a280',
-    'att48',
-    'berlin52',
-    'gr202',
-    'kroA100',
-    'eil101',
-]
+# file_names = [
+#     # 'a280',
+#     # 'att48',
+#     'berlin52',
+#     # 'gr202',
+#     # 'kroA100',
+#     'eil101',
+# ]
 
-problems = []
-for file_name in file_names:
-    problems.append(tsplib95.load('ALL_tsp/' + file_name + '.tsp'))
+# problems = []
+# for file_name in file_names:
+#     problems.append(tsplib95.load('ALL_tsp/' + file_name + '.tsp'))
 
-solutions = []
-for i, problem in enumerate(problems):
-    solution = tsplib95.load('ALL_tsp/' + file_names[i] + '.opt.tour')
-    solutions.append(problem.trace_tours(solution.tours)[0])
+# solutions = []
+# for i, problem in enumerate(problems):
+#     solution = tsplib95.load('ALL_tsp/' + file_names[i] + '.opt.tour')
+#     solutions.append(problem.trace_tours(solution.tours)[0])
 
-solutions_paths = []
-for i, problem in enumerate(problems):
-    problem_path = list(tsplib95.load(
-        'ALL_tsp/' + file_names[i] + '.tsp').as_name_dict()['node_coords'].values())
-    solution_indexes = solution = tsplib95.load(
-        'ALL_tsp/' + file_names[i] + '.opt.tour').tours[0]
-    solutions_path = []
-    for index in solution_indexes:
-        solutions_path.append(problem_path[index - 1])
-    solutions_paths.append(solutions_path)
+# solutions_paths = []
+# for i, problem in enumerate(problems):
+#     problem_path = list(tsplib95.load(
+#         'ALL_tsp/' + file_names[i] + '.tsp').as_name_dict()['node_coords'].values())
+#     solution_indexes = solution = tsplib95.load(
+#         'ALL_tsp/' + file_names[i] + '.opt.tour').tours[0]
+#     solutions_path = []
+#     for index in solution_indexes:
+#         solutions_path.append(problem_path[index - 1])
+#     solutions_paths.append(solutions_path)
 
 
-cities_coord = list()
-for problem in problems:
-    cities_coord.append(list(problem.as_name_dict()['node_coords'].values()))
+# cities_coord = list()
+# for problem in problems:
+#     cities_coord.append(list(problem.as_name_dict()['node_coords'].values()))
+
+# -----------------------------
+image_points = [BitMapPoints('images/one.png'),
+                BitMapPoints('images/two.png'),
+                BitMapPoints('images/three.png')]
+cities_coord = [image_points[0].convert_to_list_of_points(
+), image_points[1].convert_to_list_of_points(), image_points[2].convert_to_list_of_points()]
+solutions = [1, 1, 1]
+solutions = [1, 1, 1]
+solutions_paths = cities_coord
 
 ts = TravelingSalesman(cities_coord[0])
 
@@ -89,18 +99,23 @@ def prog4(out1, out2, out3, out4):
 p_set = gp.PrimitiveSet("MAIN", 0)
 p_set.addPrimitive(ts.for_every_remaining_city, 1,
                    name="FOR_REM_CITIES")
+p_set.addPrimitive(ts.for_every_city_in_path, 1,
+                   name="FOR_CITIES_IN_PATH")
 p_set.addPrimitive(ts.if_starting_city_closer_than_last_node, 2, name="IF_SC")
 p_set.addPrimitive(ts.if_centroid_farther_than_last_node, 2, name="IF_CF")
 p_set.addPrimitive(ts.if_half_remaining_cities, 2, name="IF_HRC")
 p_set.addPrimitive(
     ts.if_second_picked_city_farther_from_centroid, 1, name="IF_SPCFC")
+p_set.addPrimitive(
+    ts.if_picked_city_crosses_path, 2, name="IF_PCCP")
 p_set.addTerminal(ts.append_picked_city, name="T_append")
 p_set.addTerminal(ts.insert_picked_city, name="T_insert")
 p_set.addTerminal(ts.find_nearest_neighbor_to_current_node, name="T_F_NN")
 p_set.addTerminal(ts.find_furthest_neighbor_to_current_node, name="T_F_FN")
 p_set.addTerminal(ts.find_nearest_city_to_centroid, name="T_F_CENT")
 p_set.addTerminal(ts.pick_second_nearest_neighbor, name="T_P_SNN")
-p_set.addTerminal(ts.if_two_change, name="T_IF_SWAP")
+# p_set.addTerminal(ts.if_two_change, name="T_IF_SWAP")
+p_set.addTerminal(ts.swap_cities_if_crossing_path, name="T_SWAP")
 
 p_set.addPrimitive(prog2, 2)
 p_set.addPrimitive(prog3, 3)
@@ -128,16 +143,16 @@ def eval_traveling_distance(individual):
         return (total_distance + penalties * 10),
     except SyntaxError as s_err:
         print(s_err)
-        return 100,
+        return float('inf'),
     except TimeoutError as t_err:
         # print(t_err)
-        return 100,
+        return float('inf'),
     except Exception as e:
         print('generic', e)
         # print(individual)
         # nodes, edges, labels = gp.graph(individual)
         # draw_tree(nodes, edges, labels)
-        return 100,
+        return float('inf'),
 
 
 toolbox.register("evaluate", eval_traveling_distance)
@@ -174,13 +189,17 @@ def save_logs_and_drawings(best_indiv, cities_coord, func, mutpb, cxpb, ngen, lo
         ts.run_specific_case(ts.nearest_neighbor_heuristic, cities)
         nearest_neighbor_copy = copy.deepcopy(ts)
 
-        ts.run_specific_case(ts.strip_heuristic, cities)
+        # ts.run_specific_case(ts.strip_heuristic, cities)
+        # strip_copy = copy.deepcopy(ts)
+
+        ts.run_specific_case(ts.nearest_insertion_heuristic, cities)
         strip_copy = copy.deepcopy(ts)
 
         ts.insert_solution(solutions_paths[i])
         solution_copy = copy.deepcopy(ts)
 
-        name = problems[i].as_name_dict()['name']
+        # name = problems[i].as_name_dict()['name']
+        name = str(i)
 
         result_list = ['\n',
                        name,
@@ -212,14 +231,15 @@ def save_logs_and_drawings(best_indiv, cities_coord, func, mutpb, cxpb, ngen, lo
     draw_fitness_curve(log.chapters["fitness"].select("min"), date_time)
 
     for i, drawings in enumerate(drawings_list):
-        name = problems[i].as_name_dict()['name']
+        # name = problems[i].as_name_dict()['name']
+        name = str(i)
         draw_path(drawings, cities_coord[i], name, date_time)
 
 
 def main():
     random.seed(318)
 
-    pop = toolbox.population(n=500)
+    pop = toolbox.population(n=1000)
     hof = tools.HallOfFame(1)
     stats_fit = tools.Statistics(lambda ind: ind.fitness.values)
     mstats = tools.MultiStatistics(fitness=stats_fit)
@@ -228,7 +248,7 @@ def main():
     mstats.register("min", numpy.min)
     mstats.register("max", numpy.max)
 
-    cxpb, mutpb, ngen = 0.5, 0.2, 5
+    cxpb, mutpb, ngen = 0.5, 0.2, 100
 
     pop, log = algorithms.eaSimple(pop, toolbox, cxpb, mutpb, ngen, stats=mstats,
                                    halloffame=hof, verbose=True)

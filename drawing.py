@@ -56,7 +56,7 @@ def draw_path(paths_dict, cities_coord, name, folder_name):
 
 
 def draw_tree(nodes, edges, labels, folder_name):
-    plt.figure(3, figsize=(7, 7))
+    plt.figure(3, figsize=(12, 12))
     g = nx.Graph()
     g.add_nodes_from(nodes)
     g.add_edges_from(edges)
@@ -64,5 +64,6 @@ def draw_tree(nodes, edges, labels, folder_name):
     nx.draw_networkx_nodes(g, pos)
     nx.draw_networkx_edges(g, pos)
     nx.draw_networkx_labels(g, pos, labels, font_size=6)
-    plt.savefig('results/' + folder_name + '/tree.png', dpi=500)
+    plt.savefig('results/' + folder_name + '/tree.png', dpi=500, bbox_inches='tight',
+                pad_inches=0)
     # plt.show()
