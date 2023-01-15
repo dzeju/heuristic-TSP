@@ -18,6 +18,12 @@ def only_if(condition, out):
         pass
     return out() if condition else nothing()
 
+# eliminacja krzyrzówek
+# proste test casy
+# semantic backpropagation
+# efekt bandlina
+# lamarka
+
 
 class TravelingSalesman(object):
     def __init__(self, cities):
