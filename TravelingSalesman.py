@@ -20,9 +20,10 @@ def only_if(condition, out):
 
 # eliminacja krzyrzówek
 # proste test casy
-# semantic backpropagation
+# semantic baśckpropagation
 # efekt bandlina
 # lamarka
+# kształty?
 
 
 class TravelingSalesman(object):
