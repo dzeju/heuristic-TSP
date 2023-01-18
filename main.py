@@ -170,7 +170,11 @@ def save_logs_and_drawings(best_indiv, cities_coord, func, mutpb, cxpb, ngen, lo
     drawings_list = []
 
     date_time = str(datetime.datetime.now())
-    os.mkdir('results/'+date_time)
+    MAIN_DIR = os.path.join('results', date_time)
+    os.mkdir(MAIN_DIR)
+
+    # with open('results/'+date_time+'/logs.txt', 'w') as file:
+
     file = open('results/'+date_time+'/logs.txt', 'w')
 
     file.writelines([date_time])
@@ -189,11 +193,11 @@ def save_logs_and_drawings(best_indiv, cities_coord, func, mutpb, cxpb, ngen, lo
         ts.run_specific_case(ts.nearest_neighbor_heuristic, cities)
         nearest_neighbor_copy = copy.deepcopy(ts)
 
-        # ts.run_specific_case(ts.strip_heuristic, cities)
-        # strip_copy = copy.deepcopy(ts)
-
-        ts.run_specific_case(ts.nearest_insertion_heuristic, cities)
+        ts.run_specific_case(ts.strip_heuristic, cities)
         strip_copy = copy.deepcopy(ts)
+
+        # ts.run_specific_case(ts.nearest_insertion_heuristic, cities)
+        # strip_copy = copy.deepcopy(ts)
 
         ts.insert_solution(solutions_paths[i])
         solution_copy = copy.deepcopy(ts)
@@ -248,7 +252,7 @@ def main():
     mstats.register("min", numpy.min)
     mstats.register("max", numpy.max)
 
-    cxpb, mutpb, ngen = 0.5, 0.2, 100
+    cxpb, mutpb, ngen = 0.5, 0.2, 2
 
     pop, log = algorithms.eaSimple(pop, toolbox, cxpb, mutpb, ngen, stats=mstats,
                                    halloffame=hof, verbose=True)
@@ -300,9 +304,10 @@ if __name__ == '__main__':
     choice = input('Choice: ')
 
     if choice == '1':
-        pool = multiprocessing.Pool()
-        toolbox.register("map", pool.map)
-        main()
-        pool.close()
+        with multiprocessing.Pool() as pool:
+            # pool = multiprocessing.Pool()
+            toolbox.register("map", pool.map)
+            main()
+            # pool.close()
     elif choice == '2':
         check_solution_algorithm()
