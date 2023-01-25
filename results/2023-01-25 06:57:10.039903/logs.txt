@@ -1,0 +1,25 @@
+2023-01-25 06:57:10.039903
+
+mutpb: 0.2
+cxpb: 0.5
+ngen: 50
+
+best individual: prog3(FOR_REM_CITIES(prog3(prog4(prog4(T_P_SNN, T_F_CENT, T_F_NN, T_F_NN), prog4(T_F_NN, IF_PCCP(IF_SC(T_F_FN, T_insert), FOR_REM_CITIES(IF_SPCFC(T_F_NN))), T_append, IF_SPCFC(prog2(prog2(IF_HRC(T_F_NN, T_F_CENT), prog3(T_F_FN, T_F_NN, T_F_FN)), prog2(prog3(T_F_NN, T_F_CENT, T_append), IF_PCCP(T_P_SNN, T_P_SNN))))), IF_HRC(T_F_NN, IF_PCCP(T_F_CENT, T_F_NN)), IF_PCCP(IF_HRC(FOR_CITIES_IN_PATH(prog3(IF_HRC(T_SWAP, T_F_NN), prog4(T_append, T_insert, T_F_FN, IF_PCCP(T_SWAP, T_F_NN)), T_F_CENT)), T_F_NN), IF_SPCFC(prog2(prog2(IF_HRC(T_F_NN, T_F_CENT), T_insert), prog2(prog3(T_F_NN, T_F_CENT, T_append), prog4(T_insert, T_F_NN, T_SWAP, T_F_NN)))))), T_P_SNN, IF_SPCFC(T_insert))), T_SWAP, IF_SPCFC(prog4(T_insert, T_F_NN, T_F_FN, T_SWAP)))
+
+expr_mut: functools.partial(<function genFull at 0x1215080d0>, min_=0, max_=4)
+select: functools.partial(<function selTournament at 0x1214d7ca0>, tournsize=10)
+mate: functools.partial(<function cxOnePoint at 0x125031430>)
+mutate: functools.partial(<function mutUniform at 0x1250314c0>, expr=functools.partial(<function genFull at 0x1215080d0>, min_=0, max_=4), pset=<deap.gp.PrimitiveSet object at 0x12502e5b0>)
+
+0
+evolution path length:        283.72784200357233
+nearest neighbor path length: 289.36373183514655
+strip path length:            437.80854768585766
+optimal path length:          1025.764722394275
+
+
+1
+evolution path length:        180.7067430528586
+nearest neighbor path length: 271.9632426076695
+strip path length:            366.48528023290515
+optimal path length:          845.528091896553

@@ -39,6 +39,22 @@ def line_intersection(p1, p2, p3, p4):
     except ZeroDivisionError:
         return False
 
+# test function above
+
+
+def test():
+    p1 = (1, 1)
+    p2 = (3, 3)
+    p3 = (1, 3)
+    p4 = (3, 1)
+    print(line_intersection(p1, p2, p3, p4))
+    # not intersecting
+    p1 = (1, 6)
+    p2 = (1, 3)
+    p3 = (1, 4)
+    p4 = (1, 5)
+    print(line_intersection(p1, p2, p3, p4))
+
 
 # eliminacja krzyrzówek
 # proste test casy
@@ -249,8 +265,11 @@ class TravelingSalesman(object):
     # if the picked city crosses the path, swap it with the last city in the path
     def swap_cities_if_crossing_path(self):
         def delegate():
-            if self.picked_city is None:
+            if self.picked_city is None or len(self.path) == 0:
                 return
+            # if line_intersection(self.picked_city, self.path[-3], self.path[-2], self.path[-1]):
+            #     self.picked_city, self.path[-1] = self.path[-1], self.picked_city
+            #     return
             for i in range(len(self.path)-1):
                 if line_intersection(self.picked_city, self.path[-1], self.path[i], self.path[i+1]):
                     self.picked_city, self.path[-1] = self.path[-1], self.picked_city

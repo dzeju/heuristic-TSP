@@ -18,15 +18,16 @@ from deap import tools
 from deap import gp
 import operator
 
-from TravelingSalesman import TravelingSalesman
+from TravelingSalesman import TravelingSalesman, test
 from drawing import draw_fitness_curve, draw_tree, draw_path, draw_and_display
 
+# -----------------------------
 # file_names = [
-#     # 'a280',
-#     # 'att48',
+#     'a280',
+#     'att48',
 #     'berlin52',
-#     # 'gr202',
-#     # 'kroA100',
+#     'gr202',
+#     'kroA100',
 #     'eil101',
 # ]
 
@@ -56,14 +57,21 @@ from drawing import draw_fitness_curve, draw_tree, draw_path, draw_and_display
 #     cities_coord.append(list(problem.as_name_dict()['node_coords'].values()))
 
 # -----------------------------
-image_points = [BitMapPoints('images/one.png'),
-                BitMapPoints('images/two.png'),
-                BitMapPoints('images/three.png')]
-cities_coord = [image_points[0].convert_to_list_of_points(
-), image_points[1].convert_to_list_of_points(), image_points[2].convert_to_list_of_points()]
-solutions = [1, 1, 1]
-solutions = [1, 1, 1]
+image_points = [
+    # BitMapPoints('images/one.png'),
+    BitMapPoints('images/two.png'),
+    BitMapPoints('images/three.png'),
+    BitMapPoints('images/tests.png')
+]
+cities_coord = [
+    image_points[0].convert_to_list_of_points(),
+    image_points[1].convert_to_list_of_points(),
+    image_points[2].convert_to_list_of_points()
+]
+# solutions = [1, 1, 1]
+solutions = [28.936373183514655, 27.19632426076695, 32.01233949157353]
 solutions_paths = cities_coord
+# -----------------------------
 
 ts = TravelingSalesman(cities_coord[0])
 
@@ -221,7 +229,7 @@ def save_logs_and_drawings(best_indiv, cities_coord, func, mutpb, cxpb, ngen, lo
             file.writelines([result + '\n'])
 
         drawings = {'evolution': best_indiv_copy.path,
-                    'nearest_neighbour': nearest_neighbor_copy.path,
+                    'nearest_neighbor': nearest_neighbor_copy.path,
                     'strip': strip_copy.path,
                     'optimal': solution_copy.path}
 
@@ -252,7 +260,7 @@ def main():
     mstats.register("min", numpy.min)
     mstats.register("max", numpy.max)
 
-    cxpb, mutpb, ngen = 0.5, 0.2, 2
+    cxpb, mutpb, ngen = 0.5, 0.2, 200
 
     pop, log = algorithms.eaSimple(pop, toolbox, cxpb, mutpb, ngen, stats=mstats,
                                    halloffame=hof, verbose=True)
