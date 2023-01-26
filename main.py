@@ -61,15 +61,15 @@ image_points = [
     # BitMapPoints('images/one.png'),
     BitMapPoints('images/two.png'),
     BitMapPoints('images/three.png'),
-    BitMapPoints('images/tests.png')
+    # BitMapPoints('images/tests.png')
 ]
 cities_coord = [
     image_points[0].convert_to_list_of_points(),
     image_points[1].convert_to_list_of_points(),
-    image_points[2].convert_to_list_of_points()
+    # image_points[2].convert_to_list_of_points()
 ]
-# solutions = [1, 1, 1]
-solutions = [28.936373183514655, 27.19632426076695, 32.01233949157353]
+solutions = [1, 1]
+# solutions = [28.936373183514655, 27.19632426076695, 32.01233949157353]
 solutions_paths = cities_coord
 # -----------------------------
 
@@ -177,22 +177,7 @@ toolbox.decorate("mutate", gp.staticLimit(
 def save_logs_and_drawings(best_indiv, cities_coord, func, mutpb, cxpb, ngen, log):
     drawings_list = []
 
-    date_time = str(datetime.datetime.now())
-    MAIN_DIR = os.path.join('results', date_time)
-    os.mkdir(MAIN_DIR)
-
-    # with open('results/'+date_time+'/logs.txt', 'w') as file:
-
-    file = open('results/'+date_time+'/logs.txt', 'w')
-
-    file.writelines([date_time])
-    file.writelines(['\n\nmutpb: ' + str(mutpb), '\n', 'cxpb: ' +
-                    str(cxpb), '\n', 'ngen: ' + str(ngen)])
-    file.writelines(['\n\nbest individual: ', str(best_indiv)])
-    file.writelines(['\n\nexpr_mut: ', str(toolbox.__getattribute__('expr_mut')),
-                     '\nselect: ', str(toolbox.__getattribute__('select')),
-                     '\nmate: ', str(toolbox.__getattribute__('mate')),
-                     '\nmutate: ', str(toolbox.__getattribute__('mutate'))])
+    all_results_list = []
 
     for i, cities in enumerate(cities_coord):
         ts.run_specific_case(func, cities)
@@ -204,8 +189,8 @@ def save_logs_and_drawings(best_indiv, cities_coord, func, mutpb, cxpb, ngen, lo
         ts.run_specific_case(ts.strip_heuristic, cities)
         strip_copy = copy.deepcopy(ts)
 
-        # ts.run_specific_case(ts.nearest_insertion_heuristic, cities)
-        # strip_copy = copy.deepcopy(ts)
+        # ts.run_specific_case(ts.christofides_heuristic, cities)
+        # christofides_copy = copy.deepcopy(ts)
 
         ts.insert_solution(solutions_paths[i])
         solution_copy = copy.deepcopy(ts)
@@ -221,31 +206,59 @@ def save_logs_and_drawings(best_indiv, cities_coord, func, mutpb, cxpb, ngen, lo
                        str(nearest_neighbor_copy.total_distance),
                        'strip path length:            ' +
                        str(strip_copy.total_distance),
+                       #    'christofides path length:     ' +
+                       #    str(christofides_copy.total_distance),
                        'optimal path length:          ' +
                        str(solution_copy.total_distance)]
 
         for j, result in enumerate(result_list):
             print(result)
-            file.writelines([result + '\n'])
+            all_results_list.append(result)
+            # if (save):
+            #     file.writelines([result + '\n'])
 
         drawings = {'evolution': best_indiv_copy.path,
                     'nearest_neighbor': nearest_neighbor_copy.path,
                     'strip': strip_copy.path,
+                    # 'christofides': christofides_copy.path,
                     'optimal': solution_copy.path}
 
         drawings_list.append(drawings)
 
-    file.close()
+    toSave = input('Save results? (y/n): ')
+    if toSave == 'y' or toSave == 'Y' or toSave == '':
+        date_time = str(datetime.datetime.now())
+        MAIN_DIR = os.path.join('results', date_time)
+        os.mkdir(MAIN_DIR)
 
-    nodes, edges, labels = gp.graph(best_indiv)
-    draw_tree(nodes, edges, labels, date_time)
+        # with open('results/'+date_time+'/logs.txt', 'w') as file:
 
-    draw_fitness_curve(log.chapters["fitness"].select("min"), date_time)
+        file = open('results/'+date_time+'/logs.txt', 'w')
 
-    for i, drawings in enumerate(drawings_list):
-        # name = problems[i].as_name_dict()['name']
-        name = str(i)
-        draw_path(drawings, cities_coord[i], name, date_time)
+        file.writelines([date_time])
+        file.writelines(['\n\nmutpb: ' + str(mutpb), '\n', 'cxpb: ' +
+                        str(cxpb), '\n', 'ngen: ' + str(ngen)])
+        file.writelines(['\n\nbest individual: ', str(best_indiv)])
+        file.writelines(['\n\nexpr_mut: ', str(toolbox.__getattribute__('expr_mut')),
+                        '\nselect: ', str(toolbox.__getattribute__('select')),
+                         '\nmate: ', str(toolbox.__getattribute__('mate')),
+                         '\nmutate: ', str(toolbox.__getattribute__('mutate'))])
+
+        file.writelines(['\n\n', 'results:'])
+        for i, result in enumerate(all_results_list):
+            file.writelines([result + '\n'])
+
+        file.close()
+
+        nodes, edges, labels = gp.graph(best_indiv)
+        draw_tree(nodes, edges, labels, date_time)
+
+        draw_fitness_curve(log.chapters["fitness"].select("min"), date_time)
+
+        for i, drawings in enumerate(drawings_list):
+            # name = problems[i].as_name_dict()['name']
+            name = str(i)
+            draw_path(drawings, cities_coord[i], name, date_time)
 
 
 def main():
@@ -260,7 +273,7 @@ def main():
     mstats.register("min", numpy.min)
     mstats.register("max", numpy.max)
 
-    cxpb, mutpb, ngen = 0.5, 0.2, 200
+    cxpb, mutpb, ngen = 0.5, 0.2, 50
 
     pop, log = algorithms.eaSimple(pop, toolbox, cxpb, mutpb, ngen, stats=mstats,
                                    halloffame=hof, verbose=True)
@@ -268,10 +281,8 @@ def main():
     best_indiv = hof[0]
     func = toolbox.compile(best_indiv, pset=p_set)
 
-    toSave = input('Save results? (y/n): ')
-    if toSave == 'y' or toSave == 'Y' or toSave == '':
-        save_logs_and_drawings(best_indiv, cities_coord,
-                               func, mutpb, cxpb, ngen, log)
+    save_logs_and_drawings(best_indiv, cities_coord,
+                           func, mutpb, cxpb, ngen, log)
 
 
 def check_solution_algorithm():
@@ -292,6 +303,9 @@ def check_solution_algorithm():
         ts.run_specific_case(ts.strip_heuristic, cities)
         strip_copy = copy.deepcopy(ts)
 
+        # ts.run_specific_case(ts.christofides_heuristic, cities)
+        # christofides_copy = copy.deepcopy(ts)
+
         ts.insert_solution(solutions_paths[i])
         solution_copy = copy.deepcopy(ts)
 
@@ -300,6 +314,8 @@ def check_solution_algorithm():
         print('nearest neighbor path length: ',
               nearest_neighbor_copy.total_distance)
         print('strip path length:            ', strip_copy.total_distance)
+        # print('christofides path length:     ',
+        #       christofides_copy.total_distance)
         print('optimal path length:          ', solution_copy.total_distance)
 
         draw_and_display(best_indiv_copy.path, cities)

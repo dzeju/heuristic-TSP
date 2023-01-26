@@ -457,3 +457,28 @@ class TravelingSalesman(object):
             self.pick_exact_city(nearest_neighbor)
             partial(if_then_else, self.distance_to_starting_city(self.picked_city) <
                     self.distance_from_current_node(self.picked_city), self.insert_picked_city, self.append_picked_city)()
+
+    # def christofides_heuristic(self):
+    #     # 1. Find a minimum spanning tree of the graph.
+    #     # 2. Find a minimum weight perfect matching of the graph.
+    #     # 3. Combine the two to form a connected multigraph.
+    #     # 4. Find an Eulerian circuit in the multigraph.
+    #     # 5. Form a Hamiltonian circuit by traversing the Eulerian circuit in the order it was found, skipping repeated vertices.
+
+    #     # 1. Find a minimum spanning tree of the graph.
+    #     mst = minimum_spanning_tree()
+
+    #     # 2. Find a minimum weight perfect matching of the graph.
+    #     mwm = self.minimum_weight_perfect_matching()
+
+    #     # 3. Combine the two to form a connected multigraph.
+    #     multigraph = mst + mwm
+
+    #     # 4. Find an Eulerian circuit in the multigraph.
+    #     eulerian_circuit = self.find_eulerian_circuit(multigraph)
+
+    #     # 5. Form a Hamiltonian circuit by traversing the Eulerian circuit in the order it was found, skipping repeated vertices.
+    #     self.path = []
+    #     for city in eulerian_circuit:
+    #         if city not in self.path:
+    #             self.path.append(city)

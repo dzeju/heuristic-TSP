@@ -24,7 +24,9 @@ def draw_fitness_curve(fitness_curve, folder_name):
     # plt.show()
 
 
-def draw_path(paths_dict, cities_coord, name, folder_name):
+def draw_path(paths_dict,
+              cities_coord,
+              name, folder_name):
     plt.figure(2)
     plt.tight_layout(pad=0.5)
     paths = list(paths_dict.values())
