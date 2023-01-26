@@ -1,0 +1,25 @@
+2023-01-26 19:27:20.880166
+
+mutpb: 0.2
+cxpb: 0.5
+ngen: 50
+
+best individual: prog3(FOR_REM_CITIES(prog3(prog4(IF_PCCP(T_F_NN, T_SWAP), prog4(IF_PCCP(T_F_NN, IF_CF(IF_SC(T_F_FN, T_F_FN), T_append)), T_F_NN, IF_SC(FOR_REM_CITIES(T_P_SNN), IF_SC(T_F_FN, IF_PCCP(prog2(T_SWAP, T_F_NN), IF_SC(T_F_FN, T_F_CENT)))), IF_PCCP(T_append, prog4(IF_PCCP(T_F_NN, IF_SPCFC(prog2(T_F_FN, T_F_NN))), T_F_NN, T_append, IF_PCCP(T_F_CENT, IF_PCCP(T_F_CENT, IF_PCCP(T_P_SNN, T_F_NN)))))), IF_HRC(prog4(T_F_NN, prog4(IF_PCCP(IF_PCCP(T_F_CENT, FOR_CITIES_IN_PATH(T_append)), T_SWAP), T_F_NN, T_append, IF_SC(T_F_NN, T_F_CENT)), T_F_FN, IF_PCCP(T_F_CENT, FOR_CITIES_IN_PATH(T_append))), T_P_SNN), IF_PCCP(T_F_CENT, T_F_NN)), T_P_SNN, IF_SPCFC(T_F_CENT))), T_SWAP, IF_HRC(IF_HRC(T_F_FN, IF_SPCFC(FOR_CITIES_IN_PATH(T_F_NN))), prog4(prog2(IF_HRC(IF_SPCFC(FOR_CITIES_IN_PATH(T_SWAP)), T_F_NN), IF_CF(T_F_CENT, T_insert)), T_SWAP, IF_PCCP(T_F_CENT, T_F_NN), T_P_SNN)))
+select: functools.partial(<function selTournament at 0x104905ca0>, tournsize=10)
+mate: functools.partial(<function cxOnePoint at 0x1204b3430>)
+mutate: functools.partial(<function mutUniform at 0x1204b34c0>, expr=functools.partial(<function genFull at 0x1049380d0>, min_=1, max_=2), pset=<deap.gp.PrimitiveSet object at 0x1204b0700>)
+
+results:
+
+0
+evolution path length:        283.7752817152361
+nearest neighbor path length: 289.36373183514655
+strip path length:            437.80854768585766
+optimal path length:          1025.764722394275
+
+
+1
+evolution path length:        180.20484490970875
+nearest neighbor path length: 271.9632426076695
+strip path length:            366.48528023290515
+optimal path length:          845.528091896553

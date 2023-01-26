@@ -166,8 +166,9 @@ def eval_traveling_distance(individual):
 toolbox.register("evaluate", eval_traveling_distance)
 toolbox.register("select", tools.selTournament, tournsize=10)
 toolbox.register("mate", gp.cxOnePoint)
-toolbox.register("expr_mut", gp.genFull, min_=0, max_=4)
+toolbox.register("expr_mut", gp.genFull, min_=1, max_=2)
 toolbox.register("mutate", gp.mutUniform, expr=toolbox.expr_mut, pset=p_set)
+# toolbox.register("mutate", gp.mutNodeReplacement, pset=p_set)
 toolbox.decorate("mate", gp.staticLimit(
     key=operator.attrgetter("height"), max_value=10))
 toolbox.decorate("mutate", gp.staticLimit(
@@ -239,10 +240,11 @@ def save_logs_and_drawings(best_indiv, cities_coord, func, mutpb, cxpb, ngen, lo
         file.writelines(['\n\nmutpb: ' + str(mutpb), '\n', 'cxpb: ' +
                         str(cxpb), '\n', 'ngen: ' + str(ngen)])
         file.writelines(['\n\nbest individual: ', str(best_indiv)])
-        file.writelines(['\n\nexpr_mut: ', str(toolbox.__getattribute__('expr_mut')),
+        file.writelines([
+                        # '\n\nexpr_mut: ', str(toolbox.__getattribute__('expr_mut')),
                         '\nselect: ', str(toolbox.__getattribute__('select')),
-                         '\nmate: ', str(toolbox.__getattribute__('mate')),
-                         '\nmutate: ', str(toolbox.__getattribute__('mutate'))])
+                        '\nmate: ', str(toolbox.__getattribute__('mate')),
+                        '\nmutate: ', str(toolbox.__getattribute__('mutate'))])
 
         file.writelines(['\n\n', 'results:'])
         for i, result in enumerate(all_results_list):
