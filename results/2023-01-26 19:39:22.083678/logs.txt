@@ -1,0 +1,25 @@
+2023-01-26 19:39:22.083678
+
+mutpb: 0.2
+cxpb: 0.5
+ngen: 500
+
+best individual: prog3(FOR_REM_CITIES(prog3(prog4(prog4(IF_HRC(T_F_FN, IF_SC(IF_HRC(IF_HRC(T_F_CENT, T_F_FN), IF_PCCP(T_SWAP, T_F_NN)), T_F_NN)), T_P_SNN, T_F_NN, T_F_NN), prog4(T_F_NN, IF_PCCP(IF_CF(IF_SPCFC(FOR_CITIES_IN_PATH(T_F_CENT)), T_F_NN), FOR_REM_CITIES(IF_SPCFC(T_F_NN))), T_append, IF_SPCFC(T_F_NN)), IF_PCCP(prog4(T_F_CENT, T_append, T_SWAP, T_SWAP), prog2(IF_HRC(T_SWAP, T_F_CENT), T_F_FN)), IF_HRC(T_SWAP, prog4(T_append, T_F_NN, FOR_REM_CITIES(IF_CF(T_F_CENT, T_P_SNN)), T_F_NN))), T_P_SNN, T_SWAP)), T_SWAP, IF_PCCP(IF_PCCP(prog4(FOR_CITIES_IN_PATH(IF_HRC(T_SWAP, T_insert)), T_F_NN, IF_HRC(FOR_CITIES_IN_PATH(FOR_REM_CITIES(prog4(T_SWAP, IF_HRC(IF_SC(T_F_FN, T_P_SNN), IF_CF(T_SWAP, T_F_FN)), T_F_FN, IF_CF(T_append, prog2(T_F_CENT, T_append))))), prog4(T_append, FOR_REM_CITIES(IF_CF(T_F_CENT, T_insert)), prog3(T_F_NN, T_F_FN, T_SWAP), IF_CF(T_insert, T_F_NN))), IF_PCCP(prog4(T_insert, T_F_CENT, T_F_FN, T_F_CENT), FOR_REM_CITIES(prog4(T_F_NN, T_append, prog2(T_P_SNN, T_P_SNN), T_F_FN)))), FOR_CITIES_IN_PATH(prog4(T_P_SNN, T_F_CENT, FOR_REM_CITIES(prog4(T_P_SNN, T_append, T_F_CENT, T_F_CENT)), IF_SC(T_append, prog4(IF_SC(prog2(IF_SPCFC(T_SWAP), T_SWAP), IF_HRC(T_SWAP, prog4(T_P_SNN, T_P_SNN, T_SWAP, T_append))), IF_HRC(prog3(T_insert, T_insert, T_F_CENT), T_insert), IF_CF(T_P_SNN, T_append), IF_HRC(IF_HRC(prog2(T_P_SNN, T_SWAP), FOR_REM_CITIES(T_insert)), prog3(prog4(T_append, T_insert, T_F_CENT, T_insert), IF_HRC(T_F_CENT, T_P_SNN), IF_HRC(T_insert, T_P_SNN)))))))), prog3(FOR_REM_CITIES(prog2(prog4(IF_SC(IF_CF(T_append, T_F_FN), T_P_SNN), FOR_CITIES_IN_PATH(T_insert), IF_PCCP(T_F_FN, T_F_CENT), T_F_NN), T_P_SNN)), IF_CF(FOR_REM_CITIES(T_SWAP), IF_PCCP(IF_PCCP(IF_SC(T_F_CENT, T_F_FN), FOR_REM_CITIES(T_P_SNN)), T_P_SNN)), T_append)))
+select: functools.partial(<function selTournament at 0x7f361a2edcf0>, tournsize=10)
+mate: functools.partial(<function cxOnePoint at 0x7f3618e82170>)
+mutate: functools.partial(<function mutUniform at 0x7f3618e82200>, expr=functools.partial(<function genFull at 0x7f3619ee2200>, min_=1, max_=2), pset=<deap.gp.PrimitiveSet object at 0x7f3618e72c80>)
+
+results:
+
+0
+evolution path length:        283.72784200357233
+nearest neighbor path length: 289.36373183514655
+strip path length:            437.80854768585766
+optimal path length:          1025.764722394275
+
+
+1
+evolution path length:        180.7067430528586
+nearest neighbor path length: 271.9632426076695
+strip path length:            366.48528023290515
+optimal path length:          845.528091896553
