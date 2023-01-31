@@ -19,16 +19,16 @@ from deap import gp
 import operator
 
 from TravelingSalesman import TravelingSalesman, test
-from drawing import draw_fitness_curve, draw_tree, draw_path, draw_and_display
+from drawing import draw_fitness_curve, draw_tree, draw_path, draw_and_display, draw_just_cities
 
 # -----------------------------
 file_names = [
     'a280',
-    'att48',
-    'berlin52',
-    'gr202',
-    'kroA100',
-    'eil101',
+    # 'att48',
+    # 'berlin52',
+    # 'gr202',
+    # 'kroA100',
+    # 'eil101',
 ]
 
 problems = []
@@ -58,7 +58,7 @@ for problem in problems:
 
 # -----------------------------
 # image_points = [
-#     # BitMapPoints('images/one.png'),
+#     BitMapPoints('images/one.png'),
 #     BitMapPoints('images/two.png'),
 #     BitMapPoints('images/three.png'),
 #     # BitMapPoints('images/tests.png')
@@ -66,7 +66,7 @@ for problem in problems:
 # cities_coord = [
 #     image_points[0].convert_to_list_of_points(),
 #     image_points[1].convert_to_list_of_points(),
-#     # image_points[2].convert_to_list_of_points()
+#     image_points[2].convert_to_list_of_points()
 # ]
 # solutions = [1, 1]
 # # solutions = [
@@ -271,7 +271,7 @@ def save_logs_and_drawings(best_indiv, cities_coord, func, mutpb, cxpb, ngen, lo
 def main():
     random.seed(318)
 
-    pop = toolbox.population(n=2000)
+    pop = toolbox.population(n=1000)
     hof = tools.HallOfFame(1)
     stats_fit = tools.Statistics(lambda ind: ind.fitness.values)
     mstats = tools.MultiStatistics(fitness=stats_fit)
@@ -330,7 +330,9 @@ def check_solution_algorithm():
 
 if __name__ == '__main__':
     print('1. run evolution algorithm',
-          '2. check solution algorithm', sep='\n')
+          '2. check solution algorithm',
+          '3. draw just cites',
+          sep='\n')
 
     choice = input('Choice: ')
 
@@ -342,3 +344,9 @@ if __name__ == '__main__':
             # pool.close()
     elif choice == '2':
         check_solution_algorithm()
+    elif choice == '3':
+        for i, cities in enumerate(cities_coord):
+            # ts = TravelingSalesman(cities)
+            # print(ts.number_of_nodes)
+            # draw_just_cities(cities, file_names[i], "JUST CITIES")
+            draw_just_cities(cities, str(i+1), "JUST CITIES")
