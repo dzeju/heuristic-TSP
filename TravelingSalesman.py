@@ -174,7 +174,7 @@ class TravelingSalesman(object):
         for i, cities in enumerate(cities_coords):
             self.cities = cities
             self.run(func)
-            overall_total_distance += self.total_distance / solutions[i]
+            overall_total_distance += self.total_distance / solutions[i] * 100
             overall_penalties += self.penalties
         return overall_total_distance, overall_penalties
 

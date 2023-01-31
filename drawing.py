@@ -24,6 +24,22 @@ def draw_fitness_curve(fitness_curve, folder_name):
     # plt.show()
 
 
+def draw_just_cities(path, name, folder_name):
+    # clear figure
+    plt.clf()
+
+    plt.figure(4, figsize=(7, 7))
+    xy = numpy.array(path)
+    # cities_coord2 = numpy.array(cities_coord)
+    plt.plot(xy[:, 0], xy[:, 1], 'bo')
+    # plt.plot(cities_coord2[:, 0], cities_coord2[:, 1], 'bo')
+    # plt.show()
+    plt.axis('off')
+    plt.tight_layout()
+    plt.savefig('results/' + folder_name + '/' + name +
+                '.png', dpi=500, pad_inches=0)
+
+
 def draw_path(paths_dict,
               cities_coord,
               name, folder_name):

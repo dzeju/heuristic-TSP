@@ -19,59 +19,66 @@ from deap import gp
 import operator
 
 from TravelingSalesman import TravelingSalesman, test
-from drawing import draw_fitness_curve, draw_tree, draw_path, draw_and_display
+from drawing import draw_fitness_curve, draw_tree, draw_path, draw_and_display, draw_just_cities
 
 # -----------------------------
-# file_names = [
-#     'a280',
-#     'att48',
-#     'berlin52',
-#     'gr202',
-#     'kroA100',
-#     'eil101',
+file_names = [
+    'a280',
+    # 'att48',
+    # 'berlin52',
+    # 'gr202',
+    # 'kroA100',
+    # 'eil101',
+]
+
+problems = []
+for file_name in file_names:
+    problems.append(tsplib95.load('ALL_tsp/' + file_name + '.tsp'))
+
+solutions = []
+for i, problem in enumerate(problems):
+    solution = tsplib95.load('ALL_tsp/' + file_names[i] + '.opt.tour')
+    solutions.append(problem.trace_tours(solution.tours)[0])
+
+solutions_paths = []
+for i, problem in enumerate(problems):
+    problem_path = list(tsplib95.load(
+        'ALL_tsp/' + file_names[i] + '.tsp').as_name_dict()['node_coords'].values())
+    solution_indexes = solution = tsplib95.load(
+        'ALL_tsp/' + file_names[i] + '.opt.tour').tours[0]
+    solutions_path = []
+    for index in solution_indexes:
+        solutions_path.append(problem_path[index - 1])
+    solutions_paths.append(solutions_path)
+
+
+cities_coord = list()
+for problem in problems:
+    cities_coord.append(list(problem.as_name_dict()['node_coords'].values()))
+
+# -----------------------------
+# image_points = [
+#     BitMapPoints('images/one.png'),
+#     BitMapPoints('images/two.png'),
+#     BitMapPoints('images/three.png'),
+#     # BitMapPoints('images/tests.png')
 # ]
-
-# problems = []
-# for file_name in file_names:
-#     problems.append(tsplib95.load('ALL_tsp/' + file_name + '.tsp'))
-
-# solutions = []
-# for i, problem in enumerate(problems):
-#     solution = tsplib95.load('ALL_tsp/' + file_names[i] + '.opt.tour')
-#     solutions.append(problem.trace_tours(solution.tours)[0])
-
-# solutions_paths = []
-# for i, problem in enumerate(problems):
-#     problem_path = list(tsplib95.load(
-#         'ALL_tsp/' + file_names[i] + '.tsp').as_name_dict()['node_coords'].values())
-#     solution_indexes = solution = tsplib95.load(
-#         'ALL_tsp/' + file_names[i] + '.opt.tour').tours[0]
-#     solutions_path = []
-#     for index in solution_indexes:
-#         solutions_path.append(problem_path[index - 1])
-#     solutions_paths.append(solutions_path)
-
-
-# cities_coord = list()
-# for problem in problems:
-#     cities_coord.append(list(problem.as_name_dict()['node_coords'].values()))
-
+# cities_coord = [
+#     image_points[0].convert_to_list_of_points(),
+#     image_points[1].convert_to_list_of_points(),
+#     image_points[2].convert_to_list_of_points()
+# ]
+# solutions = [1, 1]
+# # solutions = [
+# #     # 129.86191021194034,
+# #     # 289.36373183514655,
+# #     # 271.9632426076695
+# #     # , 320.1233949157353
+# # ]
+# solutions_paths = cities_coord
 # -----------------------------
-image_points = [
-    # BitMapPoints('images/one.png'),
-    BitMapPoints('images/two.png'),
-    BitMapPoints('images/three.png'),
-    # BitMapPoints('images/tests.png')
-]
-cities_coord = [
-    image_points[0].convert_to_list_of_points(),
-    image_points[1].convert_to_list_of_points(),
-    # image_points[2].convert_to_list_of_points()
-]
-solutions = [1, 1]
-# solutions = [28.936373183514655, 27.19632426076695, 32.01233949157353]
-solutions_paths = cities_coord
-# -----------------------------
+
+# print(cities_coord[0])
 
 ts = TravelingSalesman(cities_coord[0])
 
@@ -166,7 +173,7 @@ def eval_traveling_distance(individual):
 toolbox.register("evaluate", eval_traveling_distance)
 toolbox.register("select", tools.selTournament, tournsize=10)
 toolbox.register("mate", gp.cxOnePoint)
-toolbox.register("expr_mut", gp.genFull, min_=1, max_=2)
+toolbox.register("expr_mut", gp.genFull, min_=0, max_=2)
 toolbox.register("mutate", gp.mutUniform, expr=toolbox.expr_mut, pset=p_set)
 # toolbox.register("mutate", gp.mutNodeReplacement, pset=p_set)
 toolbox.decorate("mate", gp.staticLimit(
@@ -231,8 +238,6 @@ def save_logs_and_drawings(best_indiv, cities_coord, func, mutpb, cxpb, ngen, lo
         date_time = str(datetime.datetime.now())
         MAIN_DIR = os.path.join('results', date_time)
         os.mkdir(MAIN_DIR)
-
-        # with open('results/'+date_time+'/logs.txt', 'w') as file:
 
         file = open('results/'+date_time+'/logs.txt', 'w')
 
@@ -325,7 +330,9 @@ def check_solution_algorithm():
 
 if __name__ == '__main__':
     print('1. run evolution algorithm',
-          '2. check solution algorithm', sep='\n')
+          '2. check solution algorithm',
+          '3. draw just cites',
+          sep='\n')
 
     choice = input('Choice: ')
 
@@ -337,3 +344,9 @@ if __name__ == '__main__':
             # pool.close()
     elif choice == '2':
         check_solution_algorithm()
+    elif choice == '3':
+        for i, cities in enumerate(cities_coord):
+            # ts = TravelingSalesman(cities)
+            # print(ts.number_of_nodes)
+            # draw_just_cities(cities, file_names[i], "JUST CITIES")
+            draw_just_cities(cities, str(i+1), "JUST CITIES")
