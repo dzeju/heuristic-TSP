@@ -1,0 +1,53 @@
+2023-01-30 03:02:11.470722
+
+mutpb: 0.2
+cxpb: 0.5
+ngen: 50
+
+best individual: prog4(prog3(T_F_NN, IF_SPCFC(T_append), prog3(prog3(FOR_REM_CITIES(IF_PCCP(T_F_FN, T_F_NN)), T_F_FN, T_P_SNN), T_SWAP, prog3(prog3(T_SWAP, T_F_FN, T_P_SNN), T_SWAP, T_append))), FOR_REM_CITIES(prog3(T_F_NN, T_SWAP, T_append)), IF_HRC(prog2(T_insert, T_F_FN), FOR_CITIES_IN_PATH(T_append)), IF_PCCP(prog3(T_F_NN, IF_CF(prog3(T_append, T_F_CENT, T_F_NN), FOR_CITIES_IN_PATH(T_F_NN)), T_F_CENT), IF_CF(T_F_FN, T_P_SNN)))
+select: functools.partial(<function selTournament at 0x1171e7ca0>, tournsize=10)
+mate: functools.partial(<function cxOnePoint at 0x1223d1700>)
+mutate: functools.partial(<function mutUniform at 0x1223d1670>, expr=functools.partial(<function genFull at 0x1172180d0>, min_=0, max_=2), pset=<deap.gp.PrimitiveSet object at 0x10268e5b0>)
+
+results:
+
+0
+evolution path length:        3148.109934934404
+nearest neighbor path length: 3148.109934934404
+strip path length:            200000
+optimal path length:          2586.7696475631606
+
+
+1
+evolution path length:        40595.360281604764
+nearest neighbor path length: 40526.42105630375
+strip path length:            63005.11763249053
+optimal path length:          33523.70850743559
+
+
+2
+evolution path length:        8739.068714881638
+nearest neighbor path length: 8980.918279329191
+strip path length:            16196.689338469178
+optimal path length:          7544.365901904087
+
+
+3
+evolution path length:        569.6471539514347
+nearest neighbor path length: 619.3953534350103
+strip path length:            1244.8957887926604
+optimal path length:          549.9980703917479
+
+
+4
+evolution path length:        26856.388591241608
+nearest neighbor path length: 26856.388591241608
+strip path length:            70716.73610237692
+optimal path length:          21285.44318157108
+
+
+5
+evolution path length:        763.5301390827298
+nearest neighbor path length: 825.2423227277445
+strip path length:            925.1825154138972
+optimal path length:          642.3095357906022

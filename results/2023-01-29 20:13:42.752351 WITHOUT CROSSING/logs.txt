@@ -1,0 +1,25 @@
+2023-01-29 20:13:42.752351
+
+mutpb: 0.2
+cxpb: 0.5
+ngen: 50
+
+best individual: FOR_REM_CITIES(prog2(T_F_NN, prog3(T_append, IF_HRC(T_F_NN, T_append), FOR_CITIES_IN_PATH(IF_HRC(T_append, T_insert)))))
+select: functools.partial(<function selTournament at 0x11421aca0>, tournsize=10)
+mate: functools.partial(<function cxOnePoint at 0x1154b2430>)
+mutate: functools.partial(<function mutUniform at 0x1154b24c0>, expr=functools.partial(<function genFull at 0x11424a0d0>, min_=0, max_=2), pset=<deap.gp.PrimitiveSet object at 0x1154ae520>)
+
+results:
+
+0
+evolution path length:        289.36373183514655
+nearest neighbor path length: 289.36373183514655
+strip path length:            437.80854768585766
+optimal path length:          1025.764722394275
+
+
+1
+evolution path length:        271.9632426076695
+nearest neighbor path length: 271.9632426076695
+strip path length:            366.48528023290515
+optimal path length:          845.528091896553
