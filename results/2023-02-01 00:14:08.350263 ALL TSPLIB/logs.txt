@@ -1,0 +1,53 @@
+2023-02-01 00:14:08.350263
+
+mutpb: 0.2
+cxpb: 0.5
+ngen: 50
+
+best individual: prog3(FOR_REM_CITIES(prog3(prog4(prog4(IF_PCCP(T_P_SNN, T_F_NN), IF_PCCP(IF_SPCFC(T_F_CENT), prog4(T_F_NN, prog4(IF_PCCP(T_F_NN, T_P_SNN), IF_PCCP(T_P_SNN, T_F_NN), T_F_CENT, T_F_NN), IF_SPCFC(IF_PCCP(T_SWAP, T_P_SNN)), T_SWAP)), IF_SPCFC(IF_PCCP(T_SWAP, T_F_NN)), T_F_NN), prog4(T_F_NN, T_F_NN, T_append, T_P_SNN), IF_HRC(prog4(T_P_SNN, FOR_CITIES_IN_PATH(FOR_REM_CITIES(T_F_NN)), IF_SPCFC(prog4(T_F_NN, T_F_NN, IF_PCCP(T_SWAP, T_P_SNN), T_SWAP)), T_F_NN), T_F_FN), IF_PCCP(T_P_SNN, T_F_NN)), T_P_SNN, IF_PCCP(T_SWAP, T_F_FN))), T_SWAP, T_P_SNN)
+select: functools.partial(<function selTournament at 0x7f2bc24e9cf0>, tournsize=10)
+mate: functools.partial(<function cxOnePoint at 0x7f2bc102b400>)
+mutate: functools.partial(<function mutUniform at 0x7f2bc102b490>, expr=functools.partial(<function genFull at 0x7f2bc20de200>, min_=0, max_=2), pset=<deap.gp.PrimitiveSet object at 0x7f2bd8312a10>)
+
+results:
+
+0
+evolution path length:        3151.023513136895
+nearest neighbor path length: 3148.109934934404
+strip path length:            200000
+optimal path length:          2586.7696475631606
+
+
+1
+evolution path length:        36354.511232931596
+nearest neighbor path length: 40526.42105630375
+strip path length:            63005.11763249053
+optimal path length:          33523.70850743559
+
+
+2
+evolution path length:        9909.404039370756
+nearest neighbor path length: 8980.918279329191
+strip path length:            16196.689338469178
+optimal path length:          7544.365901904087
+
+
+3
+evolution path length:        583.4119504053563
+nearest neighbor path length: 619.3953534350103
+strip path length:            1244.8957887926604
+optimal path length:          549.9980703917479
+
+
+4
+evolution path length:        25277.433701029982
+nearest neighbor path length: 26856.388591241608
+strip path length:            70716.73610237692
+optimal path length:          21285.44318157108
+
+
+5
+evolution path length:        811.9568454460724
+nearest neighbor path length: 825.2423227277445
+strip path length:            925.1825154138972
+optimal path length:          642.3095357906022
