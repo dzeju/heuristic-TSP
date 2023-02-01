@@ -22,60 +22,60 @@ from TravelingSalesman import TravelingSalesman, test
 from drawing import draw_fitness_curve, draw_tree, draw_path, draw_and_display, draw_just_cities
 
 # -----------------------------
-# file_names = [
-#     'a280',
-#     'att48',
-#     'berlin52',
-#     'gr202',
-#     'kroA100',
-#     'eil101',
-# ]
+file_names = [
+    # 'a280',
+    # 'att48',
+    'berlin52',
+    # 'gr202',
+    # 'kroA100',
+    # 'eil101',
+]
 
-# problems = []
-# for file_name in file_names:
-#     problems.append(tsplib95.load('ALL_tsp/' + file_name + '.tsp'))
+problems = []
+for file_name in file_names:
+    problems.append(tsplib95.load('ALL_tsp/' + file_name + '.tsp'))
 
-# solutions = []
-# for i, problem in enumerate(problems):
-#     solution = tsplib95.load('ALL_tsp/' + file_names[i] + '.opt.tour')
-#     solutions.append(problem.trace_tours(solution.tours)[0])
+solutions = []
+for i, problem in enumerate(problems):
+    solution = tsplib95.load('ALL_tsp/' + file_names[i] + '.opt.tour')
+    solutions.append(problem.trace_tours(solution.tours)[0])
 
-# solutions_paths = []
-# for i, problem in enumerate(problems):
-#     problem_path = list(tsplib95.load(
-#         'ALL_tsp/' + file_names[i] + '.tsp').as_name_dict()['node_coords'].values())
-#     solution_indexes = solution = tsplib95.load(
-#         'ALL_tsp/' + file_names[i] + '.opt.tour').tours[0]
-#     solutions_path = []
-#     for index in solution_indexes:
-#         solutions_path.append(problem_path[index - 1])
-#     solutions_paths.append(solutions_path)
+solutions_paths = []
+for i, problem in enumerate(problems):
+    problem_path = list(tsplib95.load(
+        'ALL_tsp/' + file_names[i] + '.tsp').as_name_dict()['node_coords'].values())
+    solution_indexes = solution = tsplib95.load(
+        'ALL_tsp/' + file_names[i] + '.opt.tour').tours[0]
+    solutions_path = []
+    for index in solution_indexes:
+        solutions_path.append(problem_path[index - 1])
+    solutions_paths.append(solutions_path)
 
 
-# cities_coord = list()
-# for problem in problems:
-#     cities_coord.append(list(problem.as_name_dict()['node_coords'].values()))
+cities_coord = list()
+for problem in problems:
+    cities_coord.append(list(problem.as_name_dict()['node_coords'].values()))
 
 # -----------------------------
-image_points = [
-    # BitMapPoints('images/one.png'),
-    BitMapPoints('images/two.png'),
-    BitMapPoints('images/three.png'),
-    # BitMapPoints('images/tests.png')
-]
-cities_coord = [
-    image_points[0].convert_to_list_of_points(),
-    image_points[1].convert_to_list_of_points(),
-    # image_points[2].convert_to_list_of_points()
-]
-# solutions = [1, 1]
-solutions = [
-    # 129.86191021194034,
-    289.36373183514655,
-    271.9632426076695
-    # , 320.1233949157353
-]
-solutions_paths = cities_coord
+# image_points = [
+#     # BitMapPoints('images/one.png'),
+#     BitMapPoints('images/two.png'),
+#     BitMapPoints('images/three.png'),
+#     # BitMapPoints('images/tests.png')
+# ]
+# cities_coord = [
+#     image_points[0].convert_to_list_of_points(),
+#     image_points[1].convert_to_list_of_points(),
+#     # image_points[2].convert_to_list_of_points()
+# ]
+# # solutions = [1, 1]
+# solutions = [
+#     # 129.86191021194034,
+#     289.36373183514655,
+#     271.9632426076695
+#     # , 320.1233949157353
+# ]
+# solutions_paths = cities_coord
 # -----------------------------
 
 # print(cities_coord[0])
@@ -269,8 +269,9 @@ def save_logs_and_drawings(best_indiv, cities_coord, func, mutpb, cxpb, ngen, lo
 
 
 def main():
-    random.seed(318)
-    cxpb, mutpb, ngen, npop = 0.5, 0.2, 50, 1000
+    # random.seed(318)
+    random.seed(453)
+    cxpb, mutpb, ngen, npop = 0.5, 0.2, 100, 1000
 
     pop = toolbox.population(n=npop)
     hof = tools.HallOfFame(1)
