@@ -121,8 +121,8 @@ p_set.addPrimitive(ts.if_centroid_farther_than_last_node, 2, name="IF_CF")
 p_set.addPrimitive(ts.if_half_remaining_cities, 2, name="IF_HRC")
 p_set.addPrimitive(
     ts.if_second_picked_city_farther_from_centroid, 1, name="IF_SPCFC")
-p_set.addPrimitive(
-    ts.if_picked_city_crosses_path, 2, name="IF_PCCP")
+# p_set.addPrimitive(
+#     ts.if_picked_city_crosses_path, 2, name="IF_PCCP")
 p_set.addTerminal(ts.append_picked_city, name="T_append")
 p_set.addTerminal(ts.insert_picked_city, name="T_insert")
 p_set.addTerminal(ts.find_nearest_neighbor_to_current_node, name="T_F_NN")
@@ -130,7 +130,7 @@ p_set.addTerminal(ts.find_furthest_neighbor_to_current_node, name="T_F_FN")
 p_set.addTerminal(ts.find_nearest_city_to_centroid, name="T_F_CENT")
 p_set.addTerminal(ts.pick_second_nearest_neighbor, name="T_P_SNN")
 # p_set.addTerminal(ts.if_two_change, name="T_IF_SWAP")
-p_set.addTerminal(ts.swap_cities_if_crossing_path, name="T_SWAP")
+# p_set.addTerminal(ts.swap_cities_if_crossing_path, name="T_SWAP")
 
 p_set.addPrimitive(prog2, 2)
 p_set.addPrimitive(prog3, 3)
@@ -271,7 +271,7 @@ def save_logs_and_drawings(best_indiv, cities_coord, func, mutpb, cxpb, ngen, lo
 def main():
     # random.seed(318)
     random.seed(453)
-    cxpb, mutpb, ngen, npop = 0.5, 0.2, 100, 1000
+    cxpb, mutpb, ngen, npop = 0.5, 0.2, 50, 1000
 
     pop = toolbox.population(n=npop)
     hof = tools.HallOfFame(1)
